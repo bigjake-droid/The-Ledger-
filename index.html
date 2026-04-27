@@ -4,177 +4,165 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>The Ledger | Civil Case Organizer</title>
+  <title>The Ledger</title>
 
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="app-shell">
+  <div class="app">
 
-    <!-- HEADER -->
-    <header class="site-header">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
       <div class="brand">
-        <div class="brand-icon">
-          <!-- Replace with your actual logo image later -->
-          <img src="assets/ledger-logo.png" alt="The Ledger Logo" />
-        </div>
-
-        <div class="brand-text">
-          <span class="brand-the">The</span>
-          <span class="brand-ledger">Ledger</span>
+        <img src="assets/ledger-logo.png" alt="The Ledger Logo" class="logo" />
+        <div>
+          <h1>The Ledger</h1>
+          <p>Civil Case Builder</p>
         </div>
       </div>
 
-      <nav class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#tools">Tools</a>
-        <a href="#start">Start</a>
+      <button id="newCaseBtn" class="primary-btn">
+        + New Case
+      </button>
+
+      <div class="search-box">
+        <input id="caseSearch" type="text" placeholder="Search cases..." />
+      </div>
+
+      <div class="case-list-wrap">
+        <h2>Your Cases</h2>
+        <ul id="caseList" class="case-list"></ul>
+      </div>
+    </aside>
+
+    <!-- MAIN APP -->
+    <main class="main">
+
+      <!-- TOP BAR -->
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Active Civil File</p>
+          <h2 id="activeCaseTitle">No Case Selected</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
+        </div>
+      </header>
+
+      <!-- CASE DASHBOARD -->
+      <section class="dashboard">
+        <div class="stat-card">
+          <span>Timeline</span>
+          <strong id="timelineCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Evidence</span>
+          <strong id="evidenceCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Damages</span>
+          <strong id="damagesCount">0</strong>
+        </div>
+
+        <div class="stat-card">
+          <span>Documents</span>
+          <strong id="docsCount">0</strong>
+        </div>
+      </section>
+
+      <!-- TABS -->
+      <nav class="tabs">
+        <button class="tab active" data-tab="timeline">Timeline</button>
+        <button class="tab" data-tab="evidence">Evidence</button>
+        <button class="tab" data-tab="damages">Damages</button>
+        <button class="tab" data-tab="documents">Documents</button>
+        <button class="tab" data-tab="summary">Summary</button>
       </nav>
-    </header>
 
-    <!-- HERO -->
-    <main>
-      <section class="hero">
-        <div class="hero-content">
-          <p class="eyebrow">Civil Court. Organized.</p>
+      <!-- CONTENT AREA -->
+      <section class="content">
 
-          <h1>
-            Let the record
-            <span>speak.</span>
-          </h1>
-
-          <p class="hero-text">
-            The Ledger helps you organize civil disputes, evidence,
-            timelines, documents, damages, and communication into one
-            clean case-building system.
-          </p>
-
-          <div class="hero-actions">
-            <a href="#start" class="btn primary">Build My Case</a>
-            <a href="#features" class="btn secondary">See What It Does</a>
+        <!-- TIMELINE -->
+        <div id="timeline" class="tab-panel active">
+          <div class="panel-header">
+            <h3>Timeline</h3>
+            <button class="small-btn" id="addTimelineBtn">+ Add Event</button>
           </div>
+
+          <div class="form-grid">
+            <input id="timelineDate" type="date" />
+            <input id="timelineTitle" type="text" placeholder="Event title" />
+            <textarea id="timelineNotes" placeholder="What happened?"></textarea>
+          </div>
+
+          <ul id="timelineList" class="item-list"></ul>
         </div>
 
-        <div class="hero-card">
-          <div class="card-top">
-            <span class="status-dot"></span>
-            <span>Civil Case File</span>
+        <!-- EVIDENCE -->
+        <div id="evidence" class="tab-panel">
+          <div class="panel-header">
+            <h3>Evidence</h3>
+            <button class="small-btn" id="addEvidenceBtn">+ Add Evidence</button>
           </div>
 
-          <div class="case-preview">
-            <div class="preview-row">
-              <span>Timeline</span>
-              <strong>12 Events</strong>
-            </div>
-
-            <div class="preview-row">
-              <span>Evidence</span>
-              <strong>34 Items</strong>
-            </div>
-
-            <div class="preview-row">
-              <span>Damages</span>
-              <strong>$ Pending</strong>
-            </div>
-
-            <div class="preview-row">
-              <span>Documents</span>
-              <strong>Ready</strong>
-            </div>
+          <div class="form-grid">
+            <input id="evidenceTitle" type="text" placeholder="Evidence title" />
+            <input id="evidenceType" type="text" placeholder="Type: photo, text, receipt, email..." />
+            <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
           </div>
+
+          <ul id="evidenceList" class="item-list"></ul>
         </div>
+
+        <!-- DAMAGES -->
+        <div id="damages" class="tab-panel">
+          <div class="panel-header">
+            <h3>Damages</h3>
+            <button class="small-btn" id="addDamageBtn">+ Add Damage</button>
+          </div>
+
+          <div class="form-grid">
+            <input id="damageTitle" type="text" placeholder="Damage title" />
+            <input id="damageAmount" type="number" placeholder="Amount $" />
+            <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
+          </div>
+
+          <ul id="damagesList" class="item-list"></ul>
+        </div>
+
+        <!-- DOCUMENTS -->
+        <div id="documents" class="tab-panel">
+          <div class="panel-header">
+            <h3>Documents</h3>
+            <button class="small-btn" id="addDocumentBtn">+ Add Document</button>
+          </div>
+
+          <div class="form-grid">
+            <input id="documentTitle" type="text" placeholder="Document title" />
+            <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
+            <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
+          </div>
+
+          <ul id="documentsList" class="item-list"></ul>
+        </div>
+
+        <!-- SUMMARY -->
+        <div id="summary" class="tab-panel">
+          <div class="panel-header">
+            <h3>Case Summary</h3>
+            <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
+          </div>
+
+          <textarea id="caseSummary" readonly></textarea>
+        </div>
+
       </section>
 
-      <!-- FEATURES -->
-      <section id="features" class="section">
-        <div class="section-heading">
-          <p class="eyebrow">Purpose Built</p>
-          <h2>For people who need order before pressure hits.</h2>
-        </div>
-
-        <div class="feature-grid">
-          <article class="feature-card">
-            <h3>Timeline Builder</h3>
-            <p>
-              Turn scattered events into a clean chronological record that
-              shows what happened, when it happened, and why it matters.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <h3>Evidence Vault</h3>
-            <p>
-              Store photos, messages, receipts, letters, recordings, and
-              supporting documents in one structured place.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <h3>Damages Tracker</h3>
-            <p>
-              Track losses, expenses, hardship, repairs, missed work, and
-              other civil damages without losing the thread.
-            </p>
-          </article>
-        </div>
-      </section>
-
-      <!-- TOOLS -->
-      <section id="tools" class="section tools-section">
-        <div class="section-heading">
-          <p class="eyebrow">Case Tools</p>
-          <h2>Structure turns facts into leverage.</h2>
-        </div>
-
-        <div class="tools-list">
-          <div class="tool-item">
-            <span>01</span>
-            <p>Upload and organize civil case documents.</p>
-          </div>
-
-          <div class="tool-item">
-            <span>02</span>
-            <p>Create a clear event-by-event case timeline.</p>
-          </div>
-
-          <div class="tool-item">
-            <span>03</span>
-            <p>Generate summaries, exhibit lists, and demand outlines.</p>
-          </div>
-
-          <div class="tool-item">
-            <span>04</span>
-            <p>Keep the record clean, searchable, and court-ready.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- START -->
-      <section id="start" class="section start-section">
-        <div class="start-box">
-          <p class="eyebrow">Start The Ledger</p>
-
-          <h2>Your facts already matter. Now organize them.</h2>
-
-          <p>
-            Build a civil case file that keeps the pressure on the record,
-            not on your memory.
-          </p>
-
-          <button class="btn primary" id="startCaseBtn">
-            Start New Civil Case
-          </button>
-        </div>
-      </section>
     </main>
-
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <p>The Ledger</p>
-      <span>Record. Prepare. Advance.</span>
-    </footer>
-
   </div>
 
   <script src="script.js"></script>
