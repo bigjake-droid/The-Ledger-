@@ -26,7 +26,26 @@ body {
     overflow: hidden; 
 }
 
-h1, h2, h3, .number, .btn-gold-glow { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+h1, h2, h3, .number, .btn-gold-glow, .splash-title { font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px; }
+
+/* --- SPLASH SCREEN --- */
+.splash-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #000000; /* Pure black to perfectly hide the logo box */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    text-align: center;
+    padding: 20px;
+    transition: opacity 0.5s ease-out;
+}
+.splash-screen.hidden { opacity: 0; pointer-events: none; }
+.splash-logo { width: 250px; margin-bottom: 20px; }
+.splash-title { font-size: 5rem; line-height: 1; margin-bottom: 10px; color: #fff; }
+.splash-mission { color: var(--gold-bright); font-size: 1rem; letter-spacing: 2px; margin-bottom: 40px; max-width: 600px; line-height: 1.6; }
 
 .app-container { display: flex; height: 100%; }
 
@@ -41,8 +60,10 @@ h1, h2, h3, .number, .btn-gold-glow { font-family: 'Bebas Neue', sans-serif; let
     gap: 20px;
 }
 
-.brand-area { text-align: center; margin-bottom: 20px; }
-.main-logo { width: 160px; margin-bottom: 15px; mix-blend-mode: lighten; }
+.brand-area { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-dim); padding-bottom: 20px;}
+.brand-text h1 { font-size: 3rem; line-height: 0.9; }
+.brand-text .highlight { font-size: 2rem; letter-spacing: 3px; color: #ccc; }
+.brand-text p { font-size: 0.75rem; color: var(--gold-bright); letter-spacing: 2px; margin-top: 5px; }
 
 .btn-red-outline { background: transparent; border: 1px solid var(--red-main); color: var(--red-main); padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
 .btn-red-outline:hover { background: rgba(169, 27, 46, 0.1); }
@@ -66,7 +87,7 @@ h1, h2, h3, .number, .btn-gold-glow { font-family: 'Bebas Neue', sans-serif; let
 /* HEADER */
 .top-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 30px; border-bottom: 1px solid var(--border-dim); padding-bottom: 20px; }
 .eyebrow { color: var(--gold-bright); font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 5px; font-weight: 600; }
-.header-titles h2 { font-size: 3rem; margin-bottom: 5px; }
+.header-titles h2 { font-size: 3rem; margin-bottom: 5px; text-transform: uppercase; }
 .subtitle { color: var(--text-muted); font-size: 0.95rem; }
 
 .header-actions { display: flex; flex-wrap: wrap; gap: 10px; }
