@@ -113,7 +113,7 @@ function logImpact(desc, baseAmt, parental, indifference) {
     updateUI();
 }
 
-// Export JSON Backup (Mobile-Safe Blob Method)
+// Export JSON Backup
 function exportData() {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
@@ -226,8 +226,8 @@ function generateReport() {
     const logo = new Image();
     logo.crossOrigin = "Anonymous"; 
     
-    // Hardwired to the transparent logo
-    logo.src = "TLBG.png"; 
+    // POINTED TO NEW LOGO
+    logo.src = "1000013825-Picsart-BackgroundRemover.png"; 
 
     logo.onload = function() {
         const canvas = document.createElement('canvas');
