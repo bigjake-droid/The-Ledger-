@@ -1,6 +1,7 @@
 // --- 1. STATE MANAGEMENT ---
 let state = {
-    totalDamages: 105000, // Base Jeep Seizure Loss
+    caseName: "JOHNSTOWN / LARIMER",
+    totalDamages: 105000, 
     pressureScore: 45,
     entries: [{desc: "Initial Jeep Seizure & Lost Income", hit: 105000, tags: [], date: "8/20/2025"}],
     evidence: []
@@ -15,11 +16,17 @@ window.onload = () => {
 };
 
 function wireButtons() {
+    // Splash Screen Entrance
+    const enterBtn = document.getElementById('btnEnterApp');
+    if(enterBtn) enterBtn.addEventListener('click', () => {
+        document.getElementById('splashScreen').classList.add('hidden');
+    });
+
     // Hero Button Modal
-    const addBtn = document.querySelector('.btn-gold-glow');
+    const addBtn = document.getElementById('btnAddHero');
     if(addBtn) addBtn.addEventListener('click', openEntryModal);
 
-    // Delete Button
+    // Delete Case / Reset
     const delBtn = document.getElementById('btnDelete');
     if(delBtn) delBtn.addEventListener('click', () => {
         if(confirm("WARNING: This will wipe the current case data. Proceed?")) {
@@ -28,7 +35,18 @@ function wireButtons() {
         }
     });
 
-    // Import Button (Mobile-Safe FileReader)
+    // New Case Button (Sidebar)
+    const newCaseBtn = document.getElementById('btnNewCaseSide');
+    if(newCaseBtn) newCaseBtn.addEventListener('click', () => {
+        let name = prompt("Enter new Case Target (e.g., Victory Motors):");
+        if(name) {
+            state = { caseName: name, totalDamages: 0, pressureScore: 0, entries: [], evidence: [] };
+            saveData();
+            updateUI();
+        }
+    });
+
+    // Import Button (Mobile-Safe)
     const importBtn = document.getElementById('btnImport');
     const importFile = document.getElementById('importFile');
     if(importBtn && importFile) {
@@ -53,7 +71,7 @@ function wireButtons() {
                 }
             };
             reader.readAsText(file);
-            e.target.value = ''; // Reset input
+            e.target.value = ''; // Reset
         };
     }
 
@@ -95,7 +113,7 @@ function logImpact(desc, baseAmt, parental, indifference) {
     updateUI();
 }
 
-// Export JSON Backup (Mobile-Safe Blob Method)
+// Export JSON Backup
 function exportData() {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
@@ -126,6 +144,9 @@ function loadData() {
 }
 
 function updateUI() {
+    const titleEl = document.getElementById('activeCaseTitle');
+    if(titleEl) titleEl.innerText = state.caseName || "NO CASE SELECTED";
+
     document.getElementById('dashTotal').innerText = `$${state.totalDamages.toLocaleString()}`;
     document.getElementById('dashPressure').innerText = state.pressureScore;
     document.getElementById('evidenceCount').innerText = state.evidence.length;
@@ -229,7 +250,7 @@ function buildPdfContent(doc, startY) {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(`Generated: ${new Date().toLocaleString()}`, 105, startY + 8, null, null, "center");
-    doc.text("Prepared via The Ledger (Unbroken Network) | Civil Litigation Tools", 105, startY + 13, null, null, "center");
+    doc.text(`Target: ${state.caseName || "Active Case File"}`, 105, startY + 13, null, null, "center");
 
     let boxY = startY + 25;
     doc.setDrawColor(0);
