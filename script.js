@@ -3,6 +3,8 @@
 let cases = JSON.parse(localStorage.getItem("ledger_cases")) || [];
 let activeCaseId = localStorage.getItem("ledger_active_case") || null;
 
+/* ===== APP START ===== */
+
 document.addEventListener("DOMContentLoaded", () => {
   bindButtons();
   bindTabs();
@@ -91,11 +93,25 @@ function clearValue(id) {
   if (el) el.value = "";
 }
 
+function cleanFileName(name) {
+  return String(name || "ledger_case")
+    .trim()
+    .replace(/[^a-z0-9]/gi, "_")
+    .replace(/_+/g, "_")
+    .toLowerCase();
+}
+
 /* ===== BUTTONS ===== */
 
 function bindButtons() {
   document.getElementById("newCaseBtn")?.addEventListener("click", createNewCase);
   document.getElementById("deleteCaseBtn")?.addEventListener("click", deleteActiveCase);
+
+  document.getElementById("exportCaseBtn")?.addEventListener("click", exportActiveCase);
+  document.getElementById("importCaseBtn")?.addEventListener("click", () => {
+    document.getElementById("importCaseFile")?.click();
+  });
+  document.getElementById("importCaseFile")?.addEventListener("change", importCaseFile);
 
   document.getElementById("addTimelineBtn")?.addEventListener("click", addTimelineEvent);
   document.getElementById("addEvidenceBtn")?.addEventListener("click", addEvidenceItem);
@@ -236,6 +252,86 @@ function loadActiveCase() {
   if (title) title.textContent = activeCase.name;
 
   renderActiveCaseData();
+}
+
+/* ===== IMPORT / EXPORT ===== */
+
+function exportActiveCase() {
+  const activeCase = getActiveCase();
+
+  if (!activeCase) {
+    alert("No case selected.");
+    return;
+  }
+
+  const exportData = {
+    app: "The Ledger",
+    version: "1.0",
+    exportedAt: new Date().toISOString(),
+    case: activeCase
+  };
+
+  const data = JSON.stringify(exportData, null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${cleanFileName(activeCase.name)}_ledger_case.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+
+  URL.revokeObjectURL(url);
+}
+
+function importCaseFile(event) {
+  const file = event.target.files[0];
+
+  if (!file) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    try {
+      const parsed = JSON.parse(e.target.result);
+
+      const importedCase = parsed.case || parsed;
+
+      if (!importedCase || !importedCase.name) {
+        alert("Invalid Ledger case file.");
+        return;
+      }
+
+      const restoredCase = {
+        id: Date.now(),
+        name: importedCase.name,
+        type: importedCase.type || "imported",
+        createdAt: importedCase.createdAt || new Date().toISOString(),
+        importedAt: new Date().toISOString(),
+        timeline: Array.isArray(importedCase.timeline) ? importedCase.timeline : [],
+        evidence: Array.isArray(importedCase.evidence) ? importedCase.evidence : [],
+        damages: Array.isArray(importedCase.damages) ? importedCase.damages : [],
+        documents: Array.isArray(importedCase.documents) ? importedCase.documents : []
+      };
+
+      cases.unshift(restoredCase);
+      activeCaseId = restoredCase.id;
+
+      saveCases();
+      saveActiveCaseId();
+
+      renderCases();
+      loadActiveCase();
+
+      alert("Case imported successfully.");
+    } catch (error) {
+      alert("Could not import this file.");
+    }
+  };
+
+  reader.readAsText(file);
+  event.target.value = "";
 }
 
 /* ===== ADD DATA ===== */
@@ -514,52 +610,68 @@ function buildSummary() {
 
   let summary = "";
 
-  summary += `CASE: ${activeCase.name}\n`;
-  summary += `TYPE: ${activeCase.type || "Civil"}\n`;
-  summary += `CREATED: ${new Date(activeCase.createdAt).toLocaleString()}\n\n`;
-
-  summary += `TIMELINE:\n`;
-  if (activeCase.timeline.length) {
-    activeCase.timeline.forEach((item) => {
-      summary += `- ${item.date || "No date"} | ${item.title}\n`;
-      if (item.notes) summary += `  Notes: ${item.notes}\n`;
-    });
-  } else {
-    summary += `- No timeline events added.\n`;
+  summary += `THE LEDGER CASE SUMMARY\n`;
+  summary += `=======================\n\n`;
+  summary += `CASE NAME: ${activeCase.name}\n`;
+  summary += `CASE TYPE: ${activeCase.type || "Civil"}\n`;
+  summary += `CREATED: ${new Date(activeCase.createdAt).toLocaleString()}\n`;
+  if (activeCase.importedAt) {
+    summary += `IMPORTED: ${new Date(activeCase.importedAt).toLocaleString()}\n`;
   }
 
-  summary += `\nEVIDENCE:\n`;
+  summary += `\nTIMELINE\n`;
+  summary += `--------\n`;
+  if (activeCase.timeline.length) {
+    activeCase.timeline.forEach((item, index) => {
+      summary += `${index + 1}. ${item.date || "No date"} | ${item.title}\n`;
+      if (item.notes) summary += `   Notes: ${item.notes}\n`;
+    });
+  } else {
+    summary += `No timeline events added.\n`;
+  }
+
+  summary += `\nEVIDENCE\n`;
+  summary += `--------\n`;
   if (activeCase.evidence.length) {
-    activeCase.evidence.forEach((item) => {
-      summary += `- ${item.title}`;
+    activeCase.evidence.forEach((item, index) => {
+      summary += `${index + 1}. ${item.title}`;
       if (item.type) summary += ` (${item.type})`;
       summary += `\n`;
-      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+      if (item.notes) summary += `   Notes: ${item.notes}\n`;
     });
   } else {
-    summary += `- No evidence added.\n`;
+    summary += `No evidence added.\n`;
   }
 
-  summary += `\nDAMAGES:\n`;
+  summary += `\nDAMAGES\n`;
+  summary += `-------\n`;
   if (activeCase.damages.length) {
-    activeCase.damages.forEach((item) => {
-      summary += `- ${item.title}: $${item.amount || "0"}\n`;
-      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+    let total = 0;
+
+    activeCase.damages.forEach((item, index) => {
+      const amount = Number(item.amount || 0);
+      total += amount;
+
+      summary += `${index + 1}. ${item.title}: $${amount.toFixed(2)}\n`;
+      if (item.notes) summary += `   Notes: ${item.notes}\n`;
     });
+
+    summary += `\nTOTAL LISTED DAMAGES: $${total.toFixed(2)}\n`;
   } else {
-    summary += `- No damages added.\n`;
+    summary += `No damages added.\n`;
   }
 
-  summary += `\nDOCUMENTS:\n`;
+  summary += `\nDOCUMENTS\n`;
+  summary += `---------\n`;
   if (activeCase.documents.length) {
-    activeCase.documents.forEach((item) => {
-      summary += `- ${item.title}`;
+    activeCase.documents.forEach((item, index) => {
+      summary += `${index + 1}. ${item.title}`;
       if (item.category) summary += ` (${item.category})`;
       summary += `\n`;
-      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+      if (item.notes) summary += `   Notes: ${item.notes}\n`;
     });
   } else {
-    summary += `- No documents added.\n`;
+    summary += `No documents added.\n`;
   }
 
   summaryBox.value = summary;
