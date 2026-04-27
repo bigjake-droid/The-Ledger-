@@ -62,22 +62,20 @@ h1, h2, h3, .number, .btn-gold-glow, .splash-title { font-family: 'Bebas Neue', 
 
 .brand-area { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-dim); padding-bottom: 20px;}
 
-/* SCRIPT FONT & GRADIENT OVERRIDE */
+/* FEDERAL STANDARD ARCHITECTURAL FONT */
 .brand-text h1 { 
-    font-family: 'Great Vibes', cursive;
-    font-size: 3.5rem; 
-    line-height: 0.9; 
-    font-weight: normal;
-    letter-spacing: 2px;
-    background: linear-gradient(to bottom, #ffffff 40%, var(--red-main) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
+    font-family: 'Cinzel', serif;
+    font-size: 3rem; 
+    line-height: 1.1; 
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #ffffff;
     margin-bottom: 5px;
+    text-transform: uppercase;
 }
 .brand-text .highlight { 
-    font-size: 4rem; 
+    font-size: 3.5rem; 
+    letter-spacing: 5px;
 }
 .brand-text p { font-size: 0.75rem; color: var(--gold-bright); letter-spacing: 2px; margin-top: 5px; }
 
