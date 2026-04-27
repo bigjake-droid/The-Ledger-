@@ -4,22 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <title>The Ledger</title>
+
   <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121417" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="The Ledger" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Icons -->
-  <link rel="icon" href="ledger-192.png" type="image/png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="ledger-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="ledger-512.png" />
   <link rel="apple-touch-icon" href="ledger-192.png" />
 
-  <title>The Ledger</title>
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- Mobile Debugger - remove later if you want -->
-  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-  <script>eruda.init();</script>
+  <!-- CSS (cache-busted) -->
+  <link rel="stylesheet" href="style.css?v=2" />
 </head>
 
 <body>
@@ -27,18 +28,14 @@
 
     <!-- START SCREEN -->
     <section id="startScreen" class="start-screen">
-      <img
-        src="ledger-512.png"
-        alt="The Ledger Logo"
-        class="start-logo"
-      />
+      <img src="ledger-512.png" alt="The Ledger Logo" class="start-logo" />
 
       <h1>The Ledger</h1>
       <p class="tagline">Let the record speak.</p>
 
       <div class="choice-row">
-        <button onclick="showMission('personal')">Personal Civil Case</button>
-        <button onclick="showMission('business')">Business Dispute</button>
+        <button onclick="showMission('personal')">Personal</button>
+        <button onclick="showMission('business')">Business</button>
       </div>
 
       <p class="bottom-disclaimer">
@@ -52,12 +49,11 @@
       <h1 id="missionTitle">Civil Case Builder</h1>
 
       <p id="missionText">
-        The Ledger exists for people dealing with civil disputes, claims, damages,
-        records, evidence, and timelines.
+        The Ledger helps you organize civil disputes, timelines, evidence, damages,
+        and documents into one structured case file.
         <br><br>
-        Civil cases are won by structure. Dates matter. Documents matter.
-        Messages matter. Receipts matter. The Ledger helps turn scattered facts
-        into a clean record that can be reviewed, organized, and acted on.
+        When records are scattered, pressure wins. When records are structured,
+        the facts carry weight.
       </p>
 
       <button onclick="enterLedgerApp()">Enter The Ledger</button>
@@ -68,7 +64,7 @@
       </p>
     </section>
 
-    <!-- LEDGER APP -->
+    <!-- APP -->
     <section id="ledgerApp" class="ledger-app hidden">
 
       <!-- SIDEBAR -->
@@ -147,7 +143,7 @@
 
             <div class="form-grid">
               <input id="timelineDate" type="date" />
-              <input id="timelineTitle" type="text" placeholder="Event title" />
+              <input id="timelineTitle" placeholder="Event title" />
               <textarea id="timelineNotes" placeholder="What happened?"></textarea>
             </div>
 
@@ -162,12 +158,12 @@
             </div>
 
             <div class="form-grid">
-              <input id="evidenceTitle" type="text" placeholder="Evidence title" />
-              <input id="evidenceType" type="text" placeholder="Type: photo, receipt, email..." />
-              <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
+              <input id="evidenceTitle" placeholder="Evidence title" />
+              <input id="evidenceType" placeholder="Type" />
+              <textarea id="evidenceNotes" placeholder="Notes"></textarea>
             </div>
 
-            <ul id="evidenceList" class="item-list"></ul>
+            <ul id="evidenceList"></ul>
           </div>
 
           <!-- DAMAGES -->
@@ -178,12 +174,12 @@
             </div>
 
             <div class="form-grid">
-              <input id="damageTitle" type="text" placeholder="Damage title" />
-              <input id="damageAmount" type="number" placeholder="Amount $" />
-              <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
+              <input id="damageTitle" placeholder="Damage title" />
+              <input id="damageAmount" type="number" placeholder="$" />
+              <textarea id="damageNotes"></textarea>
             </div>
 
-            <ul id="damagesList" class="item-list"></ul>
+            <ul id="damagesList"></ul>
           </div>
 
           <!-- DOCUMENTS -->
@@ -194,19 +190,19 @@
             </div>
 
             <div class="form-grid">
-              <input id="documentTitle" type="text" placeholder="Document title" />
-              <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
-              <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
+              <input id="documentTitle" placeholder="Title" />
+              <input id="documentCategory" placeholder="Category" />
+              <textarea id="documentNotes"></textarea>
             </div>
 
-            <ul id="documentsList" class="item-list"></ul>
+            <ul id="documentsList"></ul>
           </div>
 
           <!-- SUMMARY -->
           <div id="summary" class="tab-panel">
             <div class="panel-header">
               <h3>Case Summary</h3>
-              <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
+              <button class="small-btn" id="copySummaryBtn">Copy</button>
             </div>
 
             <textarea id="caseSummary" readonly></textarea>
@@ -214,28 +210,21 @@
 
         </section>
 
-        <p class="app-disclaimer">
-          The Ledger is a civil case organization tool. It does not provide legal advice,
-          create an attorney-client relationship, or replace review by a licensed attorney.
-        </p>
-
       </main>
     </section>
 
   </main>
 
-  <script src="script.js"></script>
+  <!-- JS (cache-busted) -->
+  <script src="script.js?v=2"></script>
 
+  <!-- Service Worker -->
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker.register("sw.js")
-          .then(registration => {
-            console.log("The Ledger Offline Mode Engaged:", registration.scope);
-          })
-          .catch(error => {
-            console.error("Offline Mode Failed:", error);
-          });
+          .then(reg => console.log("Ledger SW active:", reg.scope))
+          .catch(err => console.error("SW failed:", err));
       });
     }
   </script>
