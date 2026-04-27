@@ -20,13 +20,37 @@ function wireButtons() {
     if(addBtn) addBtn.addEventListener('click', openEntryModal);
 
     // Wire the Delete Button
-    const delBtn = document.querySelector('.btn-red');
+    const delBtn = document.getElementById('btnDelete');
     if(delBtn) delBtn.addEventListener('click', () => {
         if(confirm("WARNING: This will wipe the current case data. Proceed?")) {
             localStorage.removeItem('stealthLedgerState');
             location.reload();
         }
     });
+
+    // Wire the Import Button (Upload JSON)
+    const importBtn = document.getElementById('btnImport');
+    const importFile = document.getElementById('importFile');
+    if(importBtn && importFile) {
+        importBtn.addEventListener('click', () => importFile.click());
+        importFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                try {
+                    const importedState = JSON.parse(event.target.result);
+                    state = importedState;
+                    saveData();
+                    updateUI();
+                    alert("Case data successfully imported.");
+                } catch(err) {
+                    alert("Error: Invalid ledger backup file.");
+                }
+            };
+            reader.readAsText(file);
+        });
+    }
 
     // Wire the Pressure Checkboxes
     const checkboxes = document.querySelectorAll('.requests-panel input[type="checkbox"]');
@@ -64,6 +88,17 @@ function logImpact(desc, baseAmt, parental, indifference) {
     
     saveData();
     updateUI();
+}
+
+// Export JSON Backup
+function exportData() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "ledger_backup.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
 }
 
 // --- 4. DATA PERSISTENCE & UI ---
