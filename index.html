@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ledger | Command Center</title>
-    
+    <title>The Ledger | Record. Prepare. Advance.</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0d0f12">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0a0a0c">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,114 +17,162 @@
     <div class="app-container">
         
         <aside class="sidebar">
-            <div class="brand">
-                <div class="shield-logo">L</div>
-                <div>
-                    <h2>The Ledger</h2>
-                    <p>Civil Litigation</p>
+            <div class="brand-area">
+                <img src="ledger-512.png" alt="Logo" class="main-logo" onerror="this.style.display='none'">
+                <div class="brand-text">
+                    <h1>The<br><span class="highlight">LEDGER</span></h1>
+                    <p>RECORD. PREPARE. ADVANCE.</p>
                 </div>
             </div>
-            <nav class="nav-menu">
-                <button class="nav-btn active" onclick="switchView('dashboard')">Command Center</button>
-                <button class="nav-btn" onclick="switchView('damages')">Log Damages</button>
-                <button class="nav-btn" onclick="switchView('evidence')">Evidence Vault</button>
-            </nav>
+
+            <button class="btn-red-outline full-width">+ NEW CASE</button>
+
+            <div class="search-container">
+                <input type="text" placeholder="🔍 Search cases...">
+            </div>
+
+            <div class="sidebar-section">
+                <h4 class="section-divider"><span>YOUR CASES</span></h4>
+                <div class="empty-state-cases">
+                    <div class="folder-icon">📁</div>
+                    <p>No cases yet.<br>Build your first case<br>and take control of<br>the record.</p>
+                </div>
+            </div>
+
             <div class="sidebar-footer">
-                <p>Target: Johnstown / Larimer</p>
-                <button class="danger-btn" onclick="generateReport()">Export Notice (PDF)</button>
+                <div class="shield-mini">🛡️</div>
+                <p>Facts don't argue.<br>Records don't forget.<br><em>Truth wins.</em></p>
             </div>
         </aside>
 
         <main class="main-content">
             
             <header class="top-header">
-                <h1>Command Center</h1>
-                <p class="subtitle">Record. Prepare. Advance.</p>
+                <div class="header-titles">
+                    <p class="eyebrow">🛡️ ACTIVE CIVIL FILE</p>
+                    <h2>NO CASE SELECTED</h2>
+                    <p class="subtitle">Select a case or create a new one to begin building your record.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-red">🗑️ DELETE CASE</button>
+                    <button class="btn-gold-outline" onclick="generateReport()">📥 EXPORT CASE</button>
+                    <button class="btn-gold-outline">📤 IMPORT CASE</button>
+                </div>
             </header>
 
-            <div id="view-dashboard" class="view-section active">
-                
-                <div class="metrics-grid">
-                    <div class="metric-card primary">
-                        <h3>Statement of Account</h3>
-                        <div class="value gold" id="dashTotal">$0.00</div>
-                        <p class="sub-value">Including Statutory Interest</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>Legal Pressure Score</h3>
-                        <div class="value" id="dashPressure">45/100</div>
-                        <p class="sub-value">Evidence & Actions Logged</p>
-                    </div>
-                    <div class="metric-card">
-                        <h3>CGIA Clock</h3>
-                        <div class="value red" id="dashClock">Active</div>
-                        <p class="sub-value">Notice of Claim Pending</p>
+            <div class="stats-row">
+                <div class="stat-box">
+                    <span class="icon">📅</span>
+                    <div class="stat-data">
+                        <span class="label">TIMELINE</span>
+                        <span class="number">0</span>
+                        <span class="sub">EVENTS</span>
                     </div>
                 </div>
-
-                <div class="content-grid">
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3>Conflicts & Leverage Points</h3>
-                        </div>
-                        <ul class="action-list" id="conflictList">
-                            <li><strong>Victory Motors:</strong> Misrepresentation of GPS contract.</li>
-                            <li><strong>Northside Towing:</strong> Breach of bailment duties.</li>
-                            <li><strong>Johnstown PD:</strong> Improper vehicle seizure.</li>
-                        </ul>
+                <div class="stat-box">
+                    <span class="icon">⚡</span>
+                    <div class="stat-data">
+                        <span class="label">EVIDENCE</span>
+                        <span class="number" id="evidenceCount">0</span>
+                        <span class="sub">ITEMS</span>
                     </div>
-
-                    <div class="panel">
-                        <div class="panel-header">
-                            <h3>Recommended Requests</h3>
-                        </div>
-                        <ul class="action-list">
-                            <li><input type="checkbox" onchange="addPressure(10)"> Subpoena NCIC/CCIC query logs</li>
-                            <li><input type="checkbox" onchange="addPressure(10)"> Request complete dispatch audio</li>
-                            <li><input type="checkbox" onchange="addPressure(15)"> Mail CGIA Notice via Certified Mail</li>
-                        </ul>
+                </div>
+                <div class="stat-box">
+                    <span class="icon">⚖️</span>
+                    <div class="stat-data">
+                        <span class="label">DAMAGES</span>
+                        <span class="number" id="dashTotal">$0</span>
+                        <span class="sub">TOTAL</span>
+                    </div>
+                </div>
+                <div class="stat-box">
+                    <span class="icon">📄</span>
+                    <div class="stat-data">
+                        <span class="label">DOCUMENTS</span>
+                        <span class="number">0</span>
+                        <span class="sub">ITEMS</span>
                     </div>
                 </div>
             </div>
 
-            <div id="view-damages" class="view-section">
-                <div class="panel wide-panel">
-                    <div class="panel-header">
-                        <h3>Log Economic Impact</h3>
-                    </div>
-                    <div class="form-grid">
-                        <div class="rate-selectors">
-                            <button class="rate-btn" onclick="setRate(25, this)">Low ($25)</button>
-                            <button class="rate-btn active" onclick="setRate(75, this)">Med ($75)</button>
-                            <button class="rate-btn" onclick="setRate(150, this)">High ($150)</button>
-                        </div>
-                        <input type="number" id="baseAmount" placeholder="Base Amount (Hours or Dollars)">
-                        <input type="text" id="lossDesc" placeholder="Description (e.g., Lost Wages, Uber, Storage Fee)">
-                        
-                        <div class="multiplier-box">
-                            <label><input type="checkbox" id="parentalTax"> 2.5x Struggle Multiplier (Parental/Caregiver)</label>
-                            <label><input type="checkbox" id="indifferenceTax"> 10x Corporate Indifference Tax</label>
-                        </div>
-                        
-                        <button class="primary-btn" onclick="logDamage()">Record Impact</button>
-                    </div>
+            <div class="hero-box">
+                <div class="hero-text">
+                    <p class="eyebrow-hero">BUILD YOUR CASE.</p>
+                    <h3>CONTROL THE OUTCOME.</h3>
+                    <p>Document everything. Prove everything. Win.</p>
                 </div>
+                <button class="btn-gold-glow">+ ADD TIMELINE EVENT</button>
+            </div>
 
-                <div class="panel wide-panel">
-                    <h3>Impact Ledger</h3>
-                    <div id="ledgerEntries" class="entry-list"></div>
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="icon-circle red">🛡️</div>
+                    <div>
+                        <h4>EVIDENCE ADDED</h4>
+                        <p>No evidence added yet.</p>
+                    </div>
+                    <span class="arrow">→</span>
+                </div>
+                <div class="status-card">
+                    <div class="icon-circle red">⚔️</div>
+                    <div>
+                        <h4>CONFLICTS</h4>
+                        <p>No conflicts detected yet.</p>
+                    </div>
+                    <span class="arrow">→</span>
+                </div>
+                <div class="status-card">
+                    <div class="icon-circle red">👁️</div>
+                    <div>
+                        <h4>INVESTIGATOR VIEW</h4>
+                        <p>No contradictions yet.</p>
+                    </div>
+                    <span class="arrow">→</span>
+                </div>
+                <div class="status-card">
+                    <div class="icon-circle red">🎯</div>
+                    <div>
+                        <h4>LEVERAGE POINTS</h4>
+                        <p>No leverage points yet.</p>
+                    </div>
+                    <span class="arrow">→</span>
                 </div>
             </div>
 
-            <div id="view-evidence" class="view-section">
-                <div class="panel wide-panel">
-                    <h3>Evidence & Documentation</h3>
-                    <p>Upload receipts, notices, and correspondence here.</p>
-                    <input type="file" id="fileUpload" class="file-input">
-                    <input type="text" id="fileDesc" placeholder="Document Description">
-                    <button class="primary-btn" onclick="logEvidence()" style="margin-top: 10px;">Save to Vault</button>
-                    
-                    <div id="evidenceEntries" class="entry-list" style="margin-top: 20px;"></div>
+            <div class="pressure-panel">
+                <div class="score-left">
+                    <div class="shield-large">✊</div>
+                    <div>
+                        <span class="score-title">LEGAL PRESSURE SCORE</span>
+                        <div class="score-number"><span id="dashPressure">0</span><span class="out-of">/100</span></div>
+                        <span class="score-sub">Pressure Score</span>
+                    </div>
+                </div>
+                <div class="score-stats">
+                    <div>
+                        <span class="stat-label">Evidence Items</span>
+                        <span class="stat-val">0</span>
+                    </div>
+                    <div>
+                        <span class="stat-label">Conflicts Detected</span>
+                        <span class="stat-val">0</span>
+                    </div>
+                </div>
+                <div class="gauge-circle">
+                    <span>0%</span>
+                </div>
+            </div>
+
+            <div class="requests-panel">
+                <h4>RECOMMENDED REQUESTS</h4>
+                <div class="requests-grid">
+                    <label><input type="checkbox"> Original incident report</label>
+                    <label><input type="checkbox"> Database query records</label>
+                    <label><input type="checkbox"> CAD / dispatch logs</label>
+                    <label><input type="checkbox"> Metadata / audit logs</label>
+                    <label><input type="checkbox"> Bodycam footage & timestamps</label>
+                    <label><input type="checkbox"> Emails, texts, call logs</label>
+                    <label><input type="checkbox"> Affidavit or charging document</label>
                 </div>
             </div>
 
