@@ -10,7 +10,51 @@ document.addEventListener("DOMContentLoaded", () => {
   loadActiveCase();
 });
 
-/* ---------- STORAGE ---------- */
+/* ===== SCREEN FLOW ===== */
+
+function showMission(type) {
+  document.getElementById("startScreen")?.classList.add("hidden");
+  document.getElementById("missionScreen")?.classList.remove("hidden");
+  document.getElementById("ledgerApp")?.classList.add("hidden");
+
+  localStorage.setItem("ledger_case_type", type);
+
+  const missionTitle = document.getElementById("missionTitle");
+  const missionText = document.getElementById("missionText");
+
+  if (type === "business") {
+    missionTitle.textContent = "Business Dispute";
+
+    missionText.innerHTML = `
+      The Ledger helps businesses organize civil disputes, customer conflicts,
+      vendor issues, damages, communications, and documentation.
+      <br><br>
+      When records are scattered, pressure wins. When records are organized,
+      the facts start carrying their own weight.
+    `;
+  } else {
+    missionTitle.textContent = "Personal Civil Case";
+
+    missionText.innerHTML = `
+      The Ledger helps people organize personal civil disputes, damages,
+      records, messages, timelines, and supporting evidence.
+      <br><br>
+      Your facts already matter. The Ledger helps keep them clean, structured,
+      and ready.
+    `;
+  }
+}
+
+function enterLedgerApp() {
+  document.getElementById("startScreen")?.classList.add("hidden");
+  document.getElementById("missionScreen")?.classList.add("hidden");
+  document.getElementById("ledgerApp")?.classList.remove("hidden");
+
+  renderCases();
+  loadActiveCase();
+}
+
+/* ===== STORAGE ===== */
 
 function saveCases() {
   localStorage.setItem("ledger_cases", JSON.stringify(cases));
@@ -24,7 +68,7 @@ function saveActiveCaseId() {
   }
 }
 
-/* ---------- HELPERS ---------- */
+/* ===== HELPERS ===== */
 
 function getActiveCase() {
   return cases.find((c) => String(c.id) === String(activeCaseId));
@@ -47,7 +91,7 @@ function clearValue(id) {
   if (el) el.value = "";
 }
 
-/* ---------- BUTTONS ---------- */
+/* ===== BUTTONS ===== */
 
 function bindButtons() {
   document.getElementById("newCaseBtn")?.addEventListener("click", createNewCase);
@@ -59,11 +103,10 @@ function bindButtons() {
   document.getElementById("addDocumentBtn")?.addEventListener("click", addDocumentItem);
 
   document.getElementById("copySummaryBtn")?.addEventListener("click", copySummary);
-
   document.getElementById("caseSearch")?.addEventListener("input", renderCases);
 }
 
-/* ---------- TABS ---------- */
+/* ===== TABS ===== */
 
 function bindTabs() {
   const tabs = document.querySelectorAll(".tab");
@@ -84,16 +127,16 @@ function bindTabs() {
   });
 }
 
-/* ---------- CASES ---------- */
+/* ===== CASES ===== */
 
 function createNewCase() {
   const name = prompt("Name this civil case:");
-
   if (!name || !name.trim()) return;
 
   const newCase = {
     id: Date.now(),
     name: name.trim(),
+    type: localStorage.getItem("ledger_case_type") || "personal",
     createdAt: new Date().toISOString(),
     timeline: [],
     evidence: [],
@@ -120,7 +163,6 @@ function deleteActiveCase() {
   }
 
   const confirmed = confirm(`Delete "${activeCase.name}"? This cannot be undone.`);
-
   if (!confirmed) return;
 
   cases = cases.filter((c) => String(c.id) !== String(activeCaseId));
@@ -196,7 +238,7 @@ function loadActiveCase() {
   renderActiveCaseData();
 }
 
-/* ---------- ADD DATA ---------- */
+/* ===== ADD DATA ===== */
 
 function addTimelineEvent() {
   const activeCase = getActiveCase();
@@ -298,7 +340,7 @@ function addDocumentItem() {
   renderActiveCaseData();
 }
 
-/* ---------- RENDER DATA ---------- */
+/* ===== RENDER DATA ===== */
 
 function renderActiveCaseData() {
   const activeCase = getActiveCase();
@@ -423,20 +465,13 @@ function renderDocuments(items) {
 }
 
 function clearAllLists() {
-  const ids = [
-    "timelineList",
-    "evidenceList",
-    "damagesList",
-    "documentsList"
-  ];
-
-  ids.forEach((id) => {
+  ["timelineList", "evidenceList", "damagesList", "documentsList"].forEach((id) => {
     const list = document.getElementById(id);
     if (list) list.innerHTML = "";
   });
 }
 
-/* ---------- DELETE ITEMS ---------- */
+/* ===== DELETE ITEMS ===== */
 
 function deleteItem(section, itemId) {
   const activeCase = getActiveCase();
@@ -448,7 +483,7 @@ function deleteItem(section, itemId) {
   renderActiveCaseData();
 }
 
-/* ---------- COUNTS ---------- */
+/* ===== COUNTS ===== */
 
 function updateCounts(activeCase) {
   document.getElementById("timelineCount").textContent =
@@ -464,7 +499,7 @@ function updateCounts(activeCase) {
     activeCase ? activeCase.documents.length : 0;
 }
 
-/* ---------- SUMMARY ---------- */
+/* ===== SUMMARY ===== */
 
 function buildSummary() {
   const activeCase = getActiveCase();
@@ -480,6 +515,7 @@ function buildSummary() {
   let summary = "";
 
   summary += `CASE: ${activeCase.name}\n`;
+  summary += `TYPE: ${activeCase.type || "Civil"}\n`;
   summary += `CREATED: ${new Date(activeCase.createdAt).toLocaleString()}\n\n`;
 
   summary += `TIMELINE:\n`;
@@ -547,4 +583,4 @@ function copySummary() {
       document.execCommand("copy");
       alert("Case summary copied.");
     });
-}
+    }
