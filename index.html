@@ -20,7 +20,7 @@
   <link rel="apple-touch-icon" href="ledger-192.png" />
 
   <!-- CSS -->
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 
 <body>
@@ -31,7 +31,7 @@
       <img src="ledger-512.png" alt="The Ledger Logo" class="start-logo" />
 
       <h1>The Ledger</h1>
-      <p class="tagline">Let the record speak.</p>
+      <p class="tagline">Record. Prepare. Advance.</p>
 
       <div class="choice-row">
         <button onclick="showMission('personal')">Personal</button>
@@ -88,6 +88,12 @@
           <h2>Your Cases</h2>
           <ul id="caseList" class="case-list"></ul>
         </div>
+
+        <div class="sidebar-quote">
+          <p>Facts don’t argue.</p>
+          <p>Records don’t forget.</p>
+          <strong>Truth wins.</strong>
+        </div>
       </aside>
 
       <!-- MAIN -->
@@ -97,7 +103,10 @@
         <header class="topbar">
           <div>
             <p class="eyebrow">Active Civil File</p>
-            <h2 id="activeCaseTitle">No Case Selected</h2>
+            <h2 id="activeCaseTitle">Build Your Case</h2>
+            <p class="case-subtext">
+              Document everything. Structure everything. Control the outcome.
+            </p>
           </div>
 
           <div class="topbar-actions">
@@ -113,22 +122,41 @@
           <div class="stat-card">
             <span>Timeline</span>
             <strong id="timelineCount">0</strong>
+            <small>Events</small>
           </div>
 
           <div class="stat-card">
             <span>Evidence</span>
             <strong id="evidenceCount">0</strong>
+            <small>Items</small>
           </div>
 
           <div class="stat-card">
             <span>Damages</span>
             <strong id="damagesCount">0</strong>
+            <small>Items</small>
           </div>
 
           <div class="stat-card">
             <span>Documents</span>
             <strong id="docsCount">0</strong>
+            <small>Files</small>
           </div>
+        </section>
+
+        <!-- COMMAND ACTION -->
+        <section class="primary-action">
+          <div>
+            <p class="eyebrow">Build Your Case</p>
+            <h3>Control the record.</h3>
+            <p>
+              Civil fights are won by clean timelines, hard evidence, and records that do not move.
+            </p>
+          </div>
+
+          <button id="mainActionBtn" class="main-action-btn">
+            + Add Timeline Event
+          </button>
         </section>
 
         <!-- TABS -->
@@ -230,6 +258,6 @@
   </main>
 
   <!-- JS -->
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>
