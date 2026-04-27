@@ -15,11 +15,11 @@ window.onload = () => {
 };
 
 function wireButtons() {
-    // Wire the Hero Button to open the entry form
+    // Hero Button Modal
     const addBtn = document.querySelector('.btn-gold-glow');
     if(addBtn) addBtn.addEventListener('click', openEntryModal);
 
-    // Wire the Delete Button
+    // Delete Button
     const delBtn = document.getElementById('btnDelete');
     if(delBtn) delBtn.addEventListener('click', () => {
         if(confirm("WARNING: This will wipe the current case data. Proceed?")) {
@@ -28,31 +28,36 @@ function wireButtons() {
         }
     });
 
-    // Wire the Import Button (Upload JSON)
+    // Import Button (Mobile-Safe FileReader)
     const importBtn = document.getElementById('btnImport');
     const importFile = document.getElementById('importFile');
     if(importBtn && importFile) {
-        importBtn.addEventListener('click', () => importFile.click());
-        importFile.addEventListener('change', (e) => {
+        importBtn.onclick = () => importFile.click();
+        importFile.onchange = (e) => {
             const file = e.target.files[0];
             if(!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
                 try {
                     const importedState = JSON.parse(event.target.result);
-                    state = importedState;
-                    saveData();
-                    updateUI();
-                    alert("Case data successfully imported.");
+                    if(importedState && importedState.totalDamages !== undefined) {
+                        state = importedState;
+                        saveData();
+                        updateUI();
+                        alert("Case data successfully imported.");
+                    } else {
+                        alert("Error: File does not contain valid Ledger data.");
+                    }
                 } catch(err) {
                     alert("Error: Invalid ledger backup file.");
                 }
             };
             reader.readAsText(file);
-        });
+            e.target.value = ''; // Reset input
+        };
     }
 
-    // Wire the Pressure Checkboxes
+    // Pressure Checkboxes
     const checkboxes = document.querySelectorAll('.requests-panel input[type="checkbox"]');
     checkboxes.forEach(box => {
         box.addEventListener('change', (e) => {
@@ -90,15 +95,22 @@ function logImpact(desc, baseAmt, parental, indifference) {
     updateUI();
 }
 
-// Export JSON Backup
+// Export JSON Backup (Mobile-Safe Blob Method)
 function exportData() {
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state));
-    const downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href", dataStr);
-    downloadAnchorNode.setAttribute("download", "ledger_backup.json");
-    document.body.appendChild(downloadAnchorNode);
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+    const dataStr = JSON.stringify(state, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = "ledger_backup.json";
+    document.body.appendChild(a);
+    a.click();
+    
+    setTimeout(() => {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }, 100);
 }
 
 // --- 4. DATA PERSISTENCE & UI ---
@@ -114,12 +126,10 @@ function loadData() {
 }
 
 function updateUI() {
-    // Update Stats Row
     document.getElementById('dashTotal').innerText = `$${state.totalDamages.toLocaleString()}`;
     document.getElementById('dashPressure').innerText = state.pressureScore;
     document.getElementById('evidenceCount').innerText = state.evidence.length;
     
-    // Update Pressure Gauge Visual
     const gauge = document.querySelector('.gauge-circle span');
     if(gauge) gauge.innerText = `${state.pressureScore}%`;
 }
@@ -141,7 +151,6 @@ function injectModalStyles() {
 }
 
 function openEntryModal() {
-    // Remove existing if any
     const existing = document.getElementById('entryModal');
     if(existing) existing.remove();
 
