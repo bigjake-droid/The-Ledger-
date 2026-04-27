@@ -1,263 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>The Ledger</title>
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#121417" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="The Ledger" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-
-  <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="ledger-192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="ledger-512.png" />
-  <link rel="apple-touch-icon" href="ledger-192.png" />
-
-  <!-- CSS -->
-  <link rel="stylesheet" href="style.css?v=6" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Ledger | Command Center</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0f12">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <main class="app">
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="shield-logo">L</div>
+                <div>
+                    <h2>The Ledger</h2>
+                    <p>Civil Litigation</p>
+                </div>
+            </div>
+            <nav class="nav-menu">
+                <button class="nav-btn active" onclick="switchView('dashboard')">Command Center</button>
+                <button class="nav-btn" onclick="switchView('damages')">Log Damages</button>
+                <button class="nav-btn" onclick="switchView('evidence')">Evidence Vault</button>
+            </nav>
+            <div class="sidebar-footer">
+                <p>Target: Johnstown / Larimer</p>
+                <button class="danger-btn" onclick="generateReport()">Export Notice (PDF)</button>
+            </div>
+        </aside>
 
-    <!-- START SCREEN -->
-    <section id="startScreen" class="start-screen">
-      <img src="ledger-512.png" alt="The Ledger Logo" class="start-logo" />
+        <main class="main-content">
+            
+            <header class="top-header">
+                <h1>Command Center</h1>
+                <p class="subtitle">Record. Prepare. Advance.</p>
+            </header>
 
-      <h1>The Ledger</h1>
-      <p class="tagline">Record. Prepare. Advance.</p>
+            <div id="view-dashboard" class="view-section active">
+                
+                <div class="metrics-grid">
+                    <div class="metric-card primary">
+                        <h3>Statement of Account</h3>
+                        <div class="value gold" id="dashTotal">$0.00</div>
+                        <p class="sub-value">Including Statutory Interest</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Legal Pressure Score</h3>
+                        <div class="value" id="dashPressure">45/100</div>
+                        <p class="sub-value">Evidence & Actions Logged</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>CGIA Clock</h3>
+                        <div class="value red" id="dashClock">Active</div>
+                        <p class="sub-value">Notice of Claim Pending</p>
+                    </div>
+                </div>
 
-      <div class="choice-row">
-        <button onclick="showMission('personal')">Personal</button>
-        <button onclick="showMission('business')">Business</button>
-      </div>
+                <div class="content-grid">
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Conflicts & Leverage Points</h3>
+                        </div>
+                        <ul class="action-list" id="conflictList">
+                            <li><strong>Victory Motors:</strong> Misrepresentation of GPS contract.</li>
+                            <li><strong>Northside Towing:</strong> Breach of bailment duties.</li>
+                            <li><strong>Johnstown PD:</strong> Improper vehicle seizure.</li>
+                        </ul>
+                    </div>
 
-      <p class="bottom-disclaimer">
-        The Ledger is a civil case organization tool. It does not provide legal advice,
-        create an attorney-client relationship, or replace review by a licensed attorney.
-      </p>
-    </section>
-
-    <!-- MISSION SCREEN -->
-    <section id="missionScreen" class="mission-screen hidden">
-      <h1 id="missionTitle">Civil Case Builder</h1>
-
-      <p id="missionText">
-        The Ledger helps you organize civil disputes, timelines, evidence, damages,
-        and documents into one structured case file.
-        <br><br>
-        When records are scattered, pressure wins. When records are structured,
-        the facts carry weight.
-      </p>
-
-      <button onclick="enterLedgerApp()">Enter The Ledger</button>
-
-      <p class="bottom-disclaimer">
-        The Ledger is a civil case organization tool. It does not provide legal advice,
-        create an attorney-client relationship, or replace review by a licensed attorney.
-      </p>
-    </section>
-
-    <!-- LEDGER APP -->
-    <section id="ledgerApp" class="ledger-app hidden">
-
-      <!-- SIDEBAR -->
-      <aside class="sidebar">
-        <div class="brand">
-          <img src="ledger-192.png" alt="The Ledger Logo" class="logo" />
-
-          <div>
-            <h1>The Ledger</h1>
-            <p>Civil Case Builder</p>
-          </div>
-        </div>
-
-        <button id="newCaseBtn" class="primary-btn">+ New Case</button>
-
-        <div class="search-box">
-          <input id="caseSearch" type="text" placeholder="Search cases..." />
-        </div>
-
-        <div class="case-list-wrap">
-          <h2>Your Cases</h2>
-          <ul id="caseList" class="case-list"></ul>
-        </div>
-
-        <div class="sidebar-quote">
-          <p>Facts don’t argue.</p>
-          <p>Records don’t forget.</p>
-          <strong>Truth wins.</strong>
-        </div>
-      </aside>
-
-      <!-- MAIN -->
-      <main class="main">
-
-        <!-- TOP BAR -->
-        <header class="topbar">
-          <div>
-            <p class="eyebrow">Active Civil File</p>
-            <h2 id="activeCaseTitle">Build Your Case</h2>
-            <p class="case-subtext">
-              Document everything. Structure everything. Control the outcome.
-            </p>
-          </div>
-
-          <div class="topbar-actions">
-            <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
-            <button id="exportCaseBtn" class="small-btn">Export Case</button>
-            <button id="importCaseBtn" class="small-btn">Import Case</button>
-            <input id="importCaseFile" type="file" accept="application/json" hidden />
-          </div>
-        </header>
-
-        <!-- DASHBOARD -->
-        <section class="dashboard">
-          <div class="stat-card">
-            <span>Timeline</span>
-            <strong id="timelineCount">0</strong>
-            <small>Events</small>
-          </div>
-
-          <div class="stat-card">
-            <span>Evidence</span>
-            <strong id="evidenceCount">0</strong>
-            <small>Items</small>
-          </div>
-
-          <div class="stat-card">
-            <span>Damages</span>
-            <strong id="damagesCount">0</strong>
-            <small>Items</small>
-          </div>
-
-          <div class="stat-card">
-            <span>Documents</span>
-            <strong id="docsCount">0</strong>
-            <small>Files</small>
-          </div>
-        </section>
-
-        <!-- COMMAND ACTION -->
-        <section class="primary-action">
-          <div>
-            <p class="eyebrow">Build Your Case</p>
-            <h3>Control the record.</h3>
-            <p>
-              Civil fights are won by clean timelines, hard evidence, and records that do not move.
-            </p>
-          </div>
-
-          <button id="mainActionBtn" class="main-action-btn">
-            + Add Timeline Event
-          </button>
-        </section>
-
-        <!-- TABS -->
-        <nav class="tabs">
-          <button class="tab active" data-tab="timeline">Timeline</button>
-          <button class="tab" data-tab="evidence">Evidence</button>
-          <button class="tab" data-tab="damages">Damages</button>
-          <button class="tab" data-tab="documents">Documents</button>
-          <button class="tab" data-tab="summary">Summary</button>
-        </nav>
-
-        <!-- CONTENT -->
-        <section class="content">
-
-          <!-- TIMELINE -->
-          <div id="timeline" class="tab-panel active">
-            <div class="panel-header">
-              <h3>Timeline</h3>
-              <button class="small-btn" id="addTimelineBtn">+ Add Event</button>
+                    <div class="panel">
+                        <div class="panel-header">
+                            <h3>Recommended Requests</h3>
+                        </div>
+                        <ul class="action-list">
+                            <li><input type="checkbox" onchange="addPressure(10)"> Subpoena NCIC/CCIC query logs</li>
+                            <li><input type="checkbox" onchange="addPressure(10)"> Request complete dispatch audio</li>
+                            <li><input type="checkbox" onchange="addPressure(15)"> Mail CGIA Notice via Certified Mail</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-grid">
-              <input id="timelineDate" type="date" />
-              <input id="timelineTitle" type="text" placeholder="Event title" />
-              <textarea id="timelineNotes" placeholder="What happened?"></textarea>
+            <div id="view-damages" class="view-section">
+                <div class="panel wide-panel">
+                    <div class="panel-header">
+                        <h3>Log Economic Impact</h3>
+                    </div>
+                    <div class="form-grid">
+                        <div class="rate-selectors">
+                            <button class="rate-btn" onclick="setRate(25, this)">Low ($25)</button>
+                            <button class="rate-btn active" onclick="setRate(75, this)">Med ($75)</button>
+                            <button class="rate-btn" onclick="setRate(150, this)">High ($150)</button>
+                        </div>
+                        <input type="number" id="baseAmount" placeholder="Base Amount (Hours or Dollars)">
+                        <input type="text" id="lossDesc" placeholder="Description (e.g., Lost Wages, Uber, Storage Fee)">
+                        
+                        <div class="multiplier-box">
+                            <label><input type="checkbox" id="parentalTax"> 2.5x Struggle Multiplier (Parental/Caregiver)</label>
+                            <label><input type="checkbox" id="indifferenceTax"> 10x Corporate Indifference Tax</label>
+                        </div>
+                        
+                        <button class="primary-btn" onclick="logDamage()">Record Impact</button>
+                    </div>
+                </div>
+
+                <div class="panel wide-panel">
+                    <h3>Impact Ledger</h3>
+                    <div id="ledgerEntries" class="entry-list"></div>
+                </div>
             </div>
 
-            <ul id="timelineList" class="item-list"></ul>
-          </div>
-
-          <!-- EVIDENCE -->
-          <div id="evidence" class="tab-panel">
-            <div class="panel-header">
-              <h3>Evidence</h3>
-              <button class="small-btn" id="addEvidenceBtn">+ Add Evidence</button>
+            <div id="view-evidence" class="view-section">
+                <div class="panel wide-panel">
+                    <h3>Evidence & Documentation</h3>
+                    <p>Upload receipts, notices, and correspondence here.</p>
+                    <input type="file" id="fileUpload" class="file-input">
+                    <input type="text" id="fileDesc" placeholder="Document Description">
+                    <button class="primary-btn" onclick="logEvidence()" style="margin-top: 10px;">Save to Vault</button>
+                    
+                    <div id="evidenceEntries" class="entry-list" style="margin-top: 20px;"></div>
+                </div>
             </div>
 
-            <div class="form-grid">
-              <input id="evidenceTitle" type="text" placeholder="Evidence title" />
-              <input id="evidenceType" type="text" placeholder="Type: photo, receipt, email, message..." />
-              <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
-            </div>
+        </main>
+    </div>
 
-            <ul id="evidenceList" class="item-list"></ul>
-          </div>
-
-          <!-- DAMAGES -->
-          <div id="damages" class="tab-panel">
-            <div class="panel-header">
-              <h3>Damages</h3>
-              <button class="small-btn" id="addDamageBtn">+ Add Damage</button>
-            </div>
-
-            <div class="form-grid">
-              <input id="damageTitle" type="text" placeholder="Damage title" />
-              <input id="damageAmount" type="number" placeholder="Amount $" />
-              <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
-            </div>
-
-            <ul id="damagesList" class="item-list"></ul>
-          </div>
-
-          <!-- DOCUMENTS -->
-          <div id="documents" class="tab-panel">
-            <div class="panel-header">
-              <h3>Documents</h3>
-              <button class="small-btn" id="addDocumentBtn">+ Add Document</button>
-            </div>
-
-            <div class="form-grid">
-              <input id="documentTitle" type="text" placeholder="Document title" />
-              <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
-              <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
-            </div>
-
-            <ul id="documentsList" class="item-list"></ul>
-          </div>
-
-          <!-- SUMMARY -->
-          <div id="summary" class="tab-panel">
-            <div class="panel-header">
-              <h3>Case Summary</h3>
-              <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
-            </div>
-
-            <textarea id="caseSummary" readonly></textarea>
-          </div>
-
-        </section>
-
-        <p class="app-disclaimer">
-          The Ledger is a civil case organization tool. It does not provide legal advice,
-          create an attorney-client relationship, or replace review by a licensed attorney.
-        </p>
-
-      </main>
-    </section>
-
-  </main>
-
-  <!-- JS -->
-  <script src="script.js?v=6"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
