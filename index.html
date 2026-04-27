@@ -3,328 +3,180 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>American Standard Network</title>
 
-  <style>
-    :root {
-      --black: #0d0d0d;
-      --carbon: #171717;
-      --gold: #b88a2e;
-      --silver: #c9c9c9;
-      --case-gold: #c49a3a;
-      --med-blue: #005eff;
-      --ledger-red: #9b1018;
-      --xhr-green: #008b68;
-      --brown: #2b1b13;
-      --text-muted: #b8b8b8;
-    }
+  <title>The Ledger | Civil Case Organizer</title>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      min-height: 100vh;
-      background:
-        radial-gradient(circle at top, #2a2a2a 0%, #111 40%, #050505 100%);
-      color: #eee;
-      font-family: Georgia, "Times New Roman", serif;
-      overflow-x: hidden;
-    }
-
-    .page {
-      width: 100%;
-      min-height: 100vh;
-      padding: 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    header {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    header h1 {
-      font-size: clamp(2rem, 5vw, 5rem);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--silver);
-      text-shadow: 0 0 18px rgba(255,255,255,0.18);
-    }
-
-    header h2 {
-      margin-top: 8px;
-      font-size: clamp(1.2rem, 3vw, 2.6rem);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--gold);
-    }
-
-    header p {
-      margin-top: 18px;
-      color: var(--ledger-red);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: clamp(0.8rem, 1.5vw, 1.2rem);
-    }
-
-    .systems {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: #000;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
-    }
-
-    .panel {
-      min-height: 650px;
-      padding: 34px 22px;
-      text-align: center;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.04), rgba(0,0,0,0.25)),
-        var(--carbon);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(45deg, rgba(255,255,255,0.025) 25%, transparent 25%),
-        linear-gradient(-45deg, rgba(255,255,255,0.025) 25%, transparent 25%);
-      background-size: 18px 18px;
-      opacity: 0.25;
-      pointer-events: none;
-    }
-
-    .panel > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .case { --accent: var(--case-gold); }
-    .med { --accent: var(--med-blue); }
-    .ledger { --accent: var(--ledger-red); }
-    .xhr {
-      --accent: var(--xhr-green);
-      background:
-        linear-gradient(180deg, rgba(85,50,28,0.65), rgba(18,10,7,0.95)),
-        var(--brown);
-    }
-
-    .shield {
-      width: 220px;
-      height: 260px;
-      margin: 0 auto 32px;
-      clip-path: polygon(50% 0%, 92% 14%, 83% 72%, 50% 100%, 17% 72%, 8% 14%);
-      background:
-        linear-gradient(145deg, rgba(255,255,255,0.15), rgba(0,0,0,0.5)),
-        #111;
-      border: 4px solid var(--accent);
-      box-shadow:
-        inset 0 0 28px rgba(0,0,0,0.9),
-        0 0 24px rgba(0,0,0,0.8),
-        0 0 12px color-mix(in srgb, var(--accent), transparent 50%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .mark {
-      font-size: 5.2rem;
-      font-weight: 900;
-      color: var(--accent);
-      letter-spacing: -0.08em;
-      text-shadow:
-        0 2px 2px #000,
-        0 0 12px rgba(255,255,255,0.12);
-    }
-
-    .case .mark {
-      font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-      color: #1b1b1b;
-      -webkit-text-stroke: 2px var(--case-gold);
-      position: relative;
-    }
-
-    .case .mark::before {
-      content: "🔥";
-      position: absolute;
-      left: 24px;
-      top: 32px;
-      font-size: 2rem;
-      filter: saturate(0.75) brightness(0.85);
-      opacity: 0.85;
-      z-index: -1;
-    }
-
-    .med .mark,
-    .ledger .mark,
-    .xhr .mark {
-      font-family: Georgia, serif;
-    }
-
-    .title {
-      font-size: clamp(1.6rem, 2.4vw, 2.4rem);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--accent);
-      margin-bottom: 18px;
-      text-shadow: 0 2px 4px #000;
-    }
-
-    .divider {
-      width: 72%;
-      height: 2px;
-      margin: 0 auto 18px;
-      background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    }
-
-    .category {
-      font-size: 1.05rem;
-      text-transform: uppercase;
-      letter-spacing: 0.22em;
-      color: var(--accent);
-      margin-bottom: 34px;
-    }
-
-    .mini-icon {
-      font-size: 2.3rem;
-      color: var(--accent);
-      margin-bottom: 28px;
-      filter: drop-shadow(0 2px 4px #000);
-    }
-
-    .tagline {
-      color: var(--text-muted);
-      line-height: 1.65;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      font-size: 0.95rem;
-    }
-
-    footer {
-      text-align: center;
-      padding: 32px 10px 10px;
-      color: var(--gold);
-      text-transform: uppercase;
-      letter-spacing: 0.25em;
-      font-size: clamp(0.75rem, 1.5vw, 1.1rem);
-    }
-
-    @media (max-width: 1100px) {
-      .systems {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .panel {
-        min-height: 560px;
-      }
-    }
-
-    @media (max-width: 650px) {
-      .page {
-        padding: 16px;
-      }
-
-      .systems {
-        grid-template-columns: 1fr;
-      }
-
-      .panel {
-        min-height: 520px;
-      }
-
-      .shield {
-        width: 190px;
-        height: 225px;
-      }
-
-      .mark {
-        font-size: 4.4rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <main class="page">
-    <header>
-      <h1>The American</h1>
-      <h2>Standard Network</h2>
-      <p>We will have been unbroken.</p>
+  <div class="app-shell">
+
+    <!-- HEADER -->
+    <header class="site-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <!-- Replace with your actual logo image later -->
+          <img src="assets/ledger-logo.png" alt="The Ledger Logo" />
+        </div>
+
+        <div class="brand-text">
+          <span class="brand-the">The</span>
+          <span class="brand-ledger">Ledger</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#tools">Tools</a>
+        <a href="#start">Start</a>
+      </nav>
     </header>
 
-    <section class="systems">
+    <!-- HERO -->
+    <main>
+      <section class="hero">
+        <div class="hero-content">
+          <p class="eyebrow">Civil Court. Organized.</p>
 
-      <article class="panel case">
-        <div class="shield">
-          <div class="mark">CF</div>
+          <h1>
+            Let the record
+            <span>speak.</span>
+          </h1>
+
+          <p class="hero-text">
+            The Ledger helps you organize civil disputes, evidence,
+            timelines, documents, damages, and communication into one
+            clean case-building system.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#start" class="btn primary">Build My Case</a>
+            <a href="#features" class="btn secondary">See What It Does</a>
+          </div>
         </div>
-        <h3 class="title">CaseForge</h3>
-        <div class="divider"></div>
-        <p class="category">Criminal Law</p>
-        <div class="mini-icon">⚖</div>
-        <p class="tagline">
-          Built for defense.<br />
-          Engineered for justice.
-        </p>
-      </article>
 
-      <article class="panel med">
-        <div class="shield">
-          <div class="mark">✚</div>
+        <div class="hero-card">
+          <div class="card-top">
+            <span class="status-dot"></span>
+            <span>Civil Case File</span>
+          </div>
+
+          <div class="case-preview">
+            <div class="preview-row">
+              <span>Timeline</span>
+              <strong>12 Events</strong>
+            </div>
+
+            <div class="preview-row">
+              <span>Evidence</span>
+              <strong>34 Items</strong>
+            </div>
+
+            <div class="preview-row">
+              <span>Damages</span>
+              <strong>$ Pending</strong>
+            </div>
+
+            <div class="preview-row">
+              <span>Documents</span>
+              <strong>Ready</strong>
+            </div>
+          </div>
         </div>
-        <h3 class="title">MedForge</h3>
-        <div class="divider"></div>
-        <p class="category">Medical Law</p>
-        <div class="mini-icon">⌁</div>
-        <p class="tagline">
-          Protecting care.<br />
-          Defending life.
-        </p>
-      </article>
+      </section>
 
-      <article class="panel ledger">
-        <div class="shield">
-          <div class="mark">L</div>
+      <!-- FEATURES -->
+      <section id="features" class="section">
+        <div class="section-heading">
+          <p class="eyebrow">Purpose Built</p>
+          <h2>For people who need order before pressure hits.</h2>
         </div>
-        <h3 class="title">The Ledger</h3>
-        <div class="divider"></div>
-        <p class="category">Civil Law</p>
-        <div class="mini-icon">▥</div>
-        <p class="tagline">
-          Record. Resolve.<br />
-          Restore order.
-        </p>
-      </article>
 
-      <article class="panel xhr">
-        <div class="shield">
-          <div class="mark">X</div>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <h3>Timeline Builder</h3>
+            <p>
+              Turn scattered events into a clean chronological record that
+              shows what happened, when it happened, and why it matters.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Evidence Vault</h3>
+            <p>
+              Store photos, messages, receipts, letters, recordings, and
+              supporting documents in one structured place.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <h3>Damages Tracker</h3>
+            <p>
+              Track losses, expenses, hardship, repairs, missed work, and
+              other civil damages without losing the thread.
+            </p>
+          </article>
         </div>
-        <h3 class="title">X-HR</h3>
-        <div class="divider"></div>
-        <p class="category">Labor Law</p>
-        <div class="mini-icon">●●●</div>
-        <p class="tagline">
-          Balancing rights.<br />
-          Building workplaces.
-        </p>
-      </article>
+      </section>
 
-    </section>
+      <!-- TOOLS -->
+      <section id="tools" class="section tools-section">
+        <div class="section-heading">
+          <p class="eyebrow">Case Tools</p>
+          <h2>Structure turns facts into leverage.</h2>
+        </div>
 
-    <footer>
-      Four systems. One standard. Unbreakable justice.
+        <div class="tools-list">
+          <div class="tool-item">
+            <span>01</span>
+            <p>Upload and organize civil case documents.</p>
+          </div>
+
+          <div class="tool-item">
+            <span>02</span>
+            <p>Create a clear event-by-event case timeline.</p>
+          </div>
+
+          <div class="tool-item">
+            <span>03</span>
+            <p>Generate summaries, exhibit lists, and demand outlines.</p>
+          </div>
+
+          <div class="tool-item">
+            <span>04</span>
+            <p>Keep the record clean, searchable, and court-ready.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- START -->
+      <section id="start" class="section start-section">
+        <div class="start-box">
+          <p class="eyebrow">Start The Ledger</p>
+
+          <h2>Your facts already matter. Now organize them.</h2>
+
+          <p>
+            Build a civil case file that keeps the pressure on the record,
+            not on your memory.
+          </p>
+
+          <button class="btn primary" id="startCaseBtn">
+            Start New Civil Case
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <p>The Ledger</p>
+      <span>Record. Prepare. Advance.</span>
     </footer>
-  </main>
+
+  </div>
+
+  <script src="script.js"></script>
 </body>
 </html>
