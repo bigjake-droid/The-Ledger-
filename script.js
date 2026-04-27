@@ -1,95 +1,79 @@
-/* script.js */
-
-const apps = [
-  {
-    id: "caseforge",
-    title: "CaseForge",
-    field: "Criminal Law",
-    tagline: "Built for defense. Engineered for justice.",
-    url: "#caseforge"
-  },
-  {
-    id: "medforge",
-    title: "MedForge",
-    field: "Medical Law",
-    tagline: "Protecting care. Defending life.",
-    url: "#medforge"
-  },
-  {
-    id: "ledger",
-    title: "The Ledger",
-    field: "Civil Law",
-    tagline: "Record. Resolve. Restore order.",
-    url: "#ledger"
-  },
-  {
-    id: "xhr",
-    title: "X-HR",
-    field: "Labor Law",
-    tagline: "Balancing rights. Building workplaces.",
-    url: "#xhr"
-  }
-];
+// script.js
 
 document.addEventListener("DOMContentLoaded", () => {
-  setActivePanelEffects();
-  addPanelClickHandlers();
-  addKeyboardSupport();
+  initSmoothScroll();
+  initStartButton();
+  initHeaderShadow();
 });
 
-/* Hover / focus glow */
-function setActivePanelEffects() {
-  const panels = document.querySelectorAll(".panel");
+/* Smooth section scrolling */
+function initSmoothScroll() {
+  const links = document.querySelectorAll('a[href^="#"]');
 
-  panels.forEach((panel) => {
-    panel.addEventListener("mouseenter", () => {
-      panels.forEach((p) => p.classList.remove("active"));
-      panel.classList.add("active");
-    });
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      const targetId = link.getAttribute("href");
 
-    panel.addEventListener("mouseleave", () => {
-      panel.classList.remove("active");
-    });
-  });
-}
+      if (!targetId || targetId === "#") return;
 
-/* Click panels */
-function addPanelClickHandlers() {
-  const panels = document.querySelectorAll(".panel");
+      const target = document.querySelector(targetId);
 
-  panels.forEach((panel, index) => {
-    panel.setAttribute("tabindex", "0");
-    panel.setAttribute("role", "button");
-    panel.setAttribute("aria-label", `Open ${apps[index].title}`);
+      if (!target) return;
 
-    panel.addEventListener("click", () => {
-      openApp(apps[index]);
+      event.preventDefault();
+
+      target.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     });
   });
 }
 
-/* Enter key support */
-function addKeyboardSupport() {
-  const panels = document.querySelectorAll(".panel");
+/* Start case button */
+function initStartButton() {
+  const startBtn = document.getElementById("startCaseBtn");
 
-  panels.forEach((panel, index) => {
-    panel.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        openApp(apps[index]);
-      }
-    });
+  if (!startBtn) return;
+
+  startBtn.addEventListener("click", () => {
+    const caseName = prompt("Name this civil case:");
+
+    if (!caseName || !caseName.trim()) return;
+
+    const newCase = {
+      id: Date.now(),
+      name: caseName.trim(),
+      type: "Civil",
+      createdAt: new Date().toISOString(),
+      timeline: [],
+      evidence: [],
+      damages: [],
+      documents: []
+    };
+
+    const savedCases =
+      JSON.parse(localStorage.getItem("ledger_cases")) || [];
+
+    savedCases.push(newCase);
+
+    localStorage.setItem("ledger_cases", JSON.stringify(savedCases));
+
+    alert(`Case created: ${newCase.name}`);
   });
 }
 
-/* Temporary launch behavior */
-function openApp(app) {
-  console.log(`Opening ${app.title}`);
+/* Header shadow on scroll */
+function initHeaderShadow() {
+  const header = document.querySelector(".site-header");
 
-  const message = `${app.title}\n${app.field}\n\n${app.tagline}`;
+  if (!header) return;
 
-  alert(message);
-
-  // Later, replace alert with:
-  // window.location.href = app.url;
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 20) {
+      header.classList.add("scrolled");
+    } else {
+      header.classList.remove("scrolled");
+    }
+  });
 }
