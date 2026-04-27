@@ -4,180 +4,240 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>The Ledger</title>
-
-  <!-- PWA / App Install -->
+  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#121417" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-title" content="The Ledger" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <!-- Icons -->
-  <link rel="icon" type="image/png" sizes="192x192" href="ledger-192.png" />
-  <link rel="icon" type="image/png" sizes="512x512" href="ledger-512.png" />
+  <link rel="icon" href="ledger-192.png" type="image/png" />
   <link rel="apple-touch-icon" href="ledger-192.png" />
 
-  <!-- Styles -->
+  <title>The Ledger</title>
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
+
+  <!-- Mobile Debugger - remove later if you want -->
+  <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
+  <script>eruda.init();</script>
 </head>
 
 <body>
-  <div class="app">
+  <main class="app">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <div class="brand">
-        <img src="ledger-192.png" alt="The Ledger Logo" class="logo" />
+    <!-- START SCREEN -->
+    <section id="startScreen" class="start-screen">
+      <img
+        src="ledger-512.png"
+        alt="The Ledger Logo"
+        class="start-logo"
+      />
 
-        <div>
-          <h1>The Ledger</h1>
-          <p>Civil Case Builder</p>
+      <h1>The Ledger</h1>
+      <p class="tagline">Let the record speak.</p>
+
+      <div class="choice-row">
+        <button onclick="showMission('personal')">Personal Civil Case</button>
+        <button onclick="showMission('business')">Business Dispute</button>
+      </div>
+
+      <p class="bottom-disclaimer">
+        The Ledger is a civil case organization tool. It does not provide legal advice,
+        create an attorney-client relationship, or replace review by a licensed attorney.
+      </p>
+    </section>
+
+    <!-- MISSION SCREEN -->
+    <section id="missionScreen" class="mission-screen hidden">
+      <h1 id="missionTitle">Civil Case Builder</h1>
+
+      <p id="missionText">
+        The Ledger exists for people dealing with civil disputes, claims, damages,
+        records, evidence, and timelines.
+        <br><br>
+        Civil cases are won by structure. Dates matter. Documents matter.
+        Messages matter. Receipts matter. The Ledger helps turn scattered facts
+        into a clean record that can be reviewed, organized, and acted on.
+      </p>
+
+      <button onclick="enterLedgerApp()">Enter The Ledger</button>
+
+      <p class="bottom-disclaimer">
+        The Ledger is a civil case organization tool. It does not provide legal advice,
+        create an attorney-client relationship, or replace review by a licensed attorney.
+      </p>
+    </section>
+
+    <!-- LEDGER APP -->
+    <section id="ledgerApp" class="ledger-app hidden">
+
+      <!-- SIDEBAR -->
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="ledger-192.png" alt="The Ledger Logo" class="logo" />
+
+          <div>
+            <h1>The Ledger</h1>
+            <p>Civil Case Builder</p>
+          </div>
         </div>
-      </div>
 
-      <button id="newCaseBtn" class="primary-btn">+ New Case</button>
+        <button id="newCaseBtn" class="primary-btn">+ New Case</button>
 
-      <div class="search-box">
-        <input id="caseSearch" type="text" placeholder="Search cases..." />
-      </div>
-
-      <div class="case-list-wrap">
-        <h2>Your Cases</h2>
-        <ul id="caseList" class="case-list"></ul>
-      </div>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="main">
-
-      <!-- TOP BAR -->
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Active Civil File</p>
-          <h2 id="activeCaseTitle">No Case Selected</h2>
+        <div class="search-box">
+          <input id="caseSearch" type="text" placeholder="Search cases..." />
         </div>
 
-        <div class="topbar-actions">
+        <div class="case-list-wrap">
+          <h2>Your Cases</h2>
+          <ul id="caseList" class="case-list"></ul>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <main class="main">
+
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Active Civil File</p>
+            <h2 id="activeCaseTitle">No Case Selected</h2>
+          </div>
+
           <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
-        </div>
-      </header>
+        </header>
 
-      <!-- DASHBOARD -->
-      <section class="dashboard">
-        <div class="stat-card">
-          <span>Timeline</span>
-          <strong id="timelineCount">0</strong>
-        </div>
-
-        <div class="stat-card">
-          <span>Evidence</span>
-          <strong id="evidenceCount">0</strong>
-        </div>
-
-        <div class="stat-card">
-          <span>Damages</span>
-          <strong id="damagesCount">0</strong>
-        </div>
-
-        <div class="stat-card">
-          <span>Documents</span>
-          <strong id="docsCount">0</strong>
-        </div>
-      </section>
-
-      <!-- TABS -->
-      <nav class="tabs">
-        <button class="tab active" data-tab="timeline">Timeline</button>
-        <button class="tab" data-tab="evidence">Evidence</button>
-        <button class="tab" data-tab="damages">Damages</button>
-        <button class="tab" data-tab="documents">Documents</button>
-        <button class="tab" data-tab="summary">Summary</button>
-      </nav>
-
-      <!-- CONTENT -->
-      <section class="content">
-
-        <!-- TIMELINE -->
-        <div id="timeline" class="tab-panel active">
-          <div class="panel-header">
-            <h3>Timeline</h3>
-            <button class="small-btn" id="addTimelineBtn">+ Add Event</button>
+        <section class="dashboard">
+          <div class="stat-card">
+            <span>Timeline</span>
+            <strong id="timelineCount">0</strong>
           </div>
 
-          <div class="form-grid">
-            <input id="timelineDate" type="date" />
-            <input id="timelineTitle" type="text" placeholder="Event title" />
-            <textarea id="timelineNotes" placeholder="What happened?"></textarea>
+          <div class="stat-card">
+            <span>Evidence</span>
+            <strong id="evidenceCount">0</strong>
           </div>
 
-          <ul id="timelineList" class="item-list"></ul>
-        </div>
-
-        <!-- EVIDENCE -->
-        <div id="evidence" class="tab-panel">
-          <div class="panel-header">
-            <h3>Evidence</h3>
-            <button class="small-btn" id="addEvidenceBtn">+ Add Evidence</button>
+          <div class="stat-card">
+            <span>Damages</span>
+            <strong id="damagesCount">0</strong>
           </div>
 
-          <div class="form-grid">
-            <input id="evidenceTitle" type="text" placeholder="Evidence title" />
-            <input id="evidenceType" type="text" placeholder="Type: photo, text, receipt, email..." />
-            <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
+          <div class="stat-card">
+            <span>Documents</span>
+            <strong id="docsCount">0</strong>
+          </div>
+        </section>
+
+        <nav class="tabs">
+          <button class="tab active" data-tab="timeline">Timeline</button>
+          <button class="tab" data-tab="evidence">Evidence</button>
+          <button class="tab" data-tab="damages">Damages</button>
+          <button class="tab" data-tab="documents">Documents</button>
+          <button class="tab" data-tab="summary">Summary</button>
+        </nav>
+
+        <section class="content">
+
+          <!-- TIMELINE -->
+          <div id="timeline" class="tab-panel active">
+            <div class="panel-header">
+              <h3>Timeline</h3>
+              <button class="small-btn" id="addTimelineBtn">+ Add Event</button>
+            </div>
+
+            <div class="form-grid">
+              <input id="timelineDate" type="date" />
+              <input id="timelineTitle" type="text" placeholder="Event title" />
+              <textarea id="timelineNotes" placeholder="What happened?"></textarea>
+            </div>
+
+            <ul id="timelineList" class="item-list"></ul>
           </div>
 
-          <ul id="evidenceList" class="item-list"></ul>
-        </div>
+          <!-- EVIDENCE -->
+          <div id="evidence" class="tab-panel">
+            <div class="panel-header">
+              <h3>Evidence</h3>
+              <button class="small-btn" id="addEvidenceBtn">+ Add Evidence</button>
+            </div>
 
-        <!-- DAMAGES -->
-        <div id="damages" class="tab-panel">
-          <div class="panel-header">
-            <h3>Damages</h3>
-            <button class="small-btn" id="addDamageBtn">+ Add Damage</button>
+            <div class="form-grid">
+              <input id="evidenceTitle" type="text" placeholder="Evidence title" />
+              <input id="evidenceType" type="text" placeholder="Type: photo, receipt, email..." />
+              <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
+            </div>
+
+            <ul id="evidenceList" class="item-list"></ul>
           </div>
 
-          <div class="form-grid">
-            <input id="damageTitle" type="text" placeholder="Damage title" />
-            <input id="damageAmount" type="number" placeholder="Amount $" />
-            <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
+          <!-- DAMAGES -->
+          <div id="damages" class="tab-panel">
+            <div class="panel-header">
+              <h3>Damages</h3>
+              <button class="small-btn" id="addDamageBtn">+ Add Damage</button>
+            </div>
+
+            <div class="form-grid">
+              <input id="damageTitle" type="text" placeholder="Damage title" />
+              <input id="damageAmount" type="number" placeholder="Amount $" />
+              <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
+            </div>
+
+            <ul id="damagesList" class="item-list"></ul>
           </div>
 
-          <ul id="damagesList" class="item-list"></ul>
-        </div>
+          <!-- DOCUMENTS -->
+          <div id="documents" class="tab-panel">
+            <div class="panel-header">
+              <h3>Documents</h3>
+              <button class="small-btn" id="addDocumentBtn">+ Add Document</button>
+            </div>
 
-        <!-- DOCUMENTS -->
-        <div id="documents" class="tab-panel">
-          <div class="panel-header">
-            <h3>Documents</h3>
-            <button class="small-btn" id="addDocumentBtn">+ Add Document</button>
+            <div class="form-grid">
+              <input id="documentTitle" type="text" placeholder="Document title" />
+              <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
+              <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
+            </div>
+
+            <ul id="documentsList" class="item-list"></ul>
           </div>
 
-          <div class="form-grid">
-            <input id="documentTitle" type="text" placeholder="Document title" />
-            <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
-            <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
+          <!-- SUMMARY -->
+          <div id="summary" class="tab-panel">
+            <div class="panel-header">
+              <h3>Case Summary</h3>
+              <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
+            </div>
+
+            <textarea id="caseSummary" readonly></textarea>
           </div>
 
-          <ul id="documentsList" class="item-list"></ul>
-        </div>
+        </section>
 
-        <!-- SUMMARY -->
-        <div id="summary" class="tab-panel">
-          <div class="panel-header">
-            <h3>Case Summary</h3>
-            <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
-          </div>
+        <p class="app-disclaimer">
+          The Ledger is a civil case organization tool. It does not provide legal advice,
+          create an attorney-client relationship, or replace review by a licensed attorney.
+        </p>
 
-          <textarea id="caseSummary" readonly></textarea>
-        </div>
+      </main>
+    </section>
 
-      </section>
-    </main>
-  </div>
+  </main>
 
-  <!-- Scripts -->
   <script src="script.js"></script>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js")
+          .then(registration => {
+            console.log("The Ledger Offline Mode Engaged:", registration.scope);
+          })
+          .catch(error => {
+            console.error("Offline Mode Failed:", error);
+          });
+      });
+    }
+  </script>
 </body>
 </html>
