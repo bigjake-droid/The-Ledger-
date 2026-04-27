@@ -42,7 +42,7 @@ h1, h2, h3, .number, .btn-gold-glow { font-family: 'Bebas Neue', sans-serif; let
 }
 
 .brand-area { text-align: center; margin-bottom: 20px; }
-.main-logo { width: 80px; margin-bottom: 10px; }
+.main-logo { width: 160px; margin-bottom: 15px; }
 .brand-text h1 { font-size: 2.5rem; line-height: 0.9; }
 .brand-text .highlight { font-size: 1.5rem; letter-spacing: 3px; color: #ccc; }
 .brand-text p { font-size: 0.65rem; color: var(--gold-bright); letter-spacing: 2px; margin-top: 5px; }
