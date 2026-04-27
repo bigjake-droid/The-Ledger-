@@ -113,6 +113,11 @@ function bindButtons() {
   });
   document.getElementById("importCaseFile")?.addEventListener("change", importCaseFile);
 
+  document.getElementById("mainActionBtn")?.addEventListener("click", () => {
+    document.querySelector('[data-tab="timeline"]')?.click();
+    document.getElementById("timelineTitle")?.focus();
+  });
+
   document.getElementById("addTimelineBtn")?.addEventListener("click", addTimelineEvent);
   document.getElementById("addEvidenceBtn")?.addEventListener("click", addEvidenceItem);
   document.getElementById("addDamageBtn")?.addEventListener("click", addDamageItem);
@@ -204,7 +209,7 @@ function renderCases() {
   );
 
   if (!filteredCases.length) {
-    list.innerHTML = `<li class="empty-state">No cases found.</li>`;
+    list.innerHTML = `<li class="empty-state">No cases yet. Build your first case file.</li>`;
     return;
   }
 
@@ -240,9 +245,14 @@ function loadActiveCase() {
 
   const activeCase = getActiveCase();
   const title = document.getElementById("activeCaseTitle");
+  const subtext = document.querySelector(".case-subtext");
 
   if (!activeCase) {
-    if (title) title.textContent = "No Case Selected";
+    if (title) title.textContent = "Build Your Case";
+    if (subtext) {
+      subtext.textContent = "Document everything. Structure everything. Control the outcome.";
+    }
+
     clearAllLists();
     updateCounts(null);
     buildSummary();
@@ -250,6 +260,9 @@ function loadActiveCase() {
   }
 
   if (title) title.textContent = activeCase.name;
+  if (subtext) {
+    subtext.textContent = "Keep the facts clean, the timeline tight, and the record ready.";
+  }
 
   renderActiveCaseData();
 }
@@ -295,7 +308,6 @@ function importCaseFile(event) {
   reader.onload = function (e) {
     try {
       const parsed = JSON.parse(e.target.result);
-
       const importedCase = parsed.case || parsed;
 
       if (!importedCase || !importedCase.name) {
@@ -464,7 +476,7 @@ function renderTimeline(items) {
   list.innerHTML = "";
 
   if (!items.length) {
-    list.innerHTML = `<li class="empty-state">No timeline events yet.</li>`;
+    list.innerHTML = `<li class="empty-state">No events recorded yet. Start documenting now.</li>`;
     return;
   }
 
@@ -492,7 +504,7 @@ function renderEvidence(items) {
   list.innerHTML = "";
 
   if (!items.length) {
-    list.innerHTML = `<li class="empty-state">No evidence added yet.</li>`;
+    list.innerHTML = `<li class="empty-state">No evidence logged. Add your first item.</li>`;
     return;
   }
 
@@ -517,7 +529,7 @@ function renderDamages(items) {
   list.innerHTML = "";
 
   if (!items.length) {
-    list.innerHTML = `<li class="empty-state">No damages added yet.</li>`;
+    list.innerHTML = `<li class="empty-state">No damages logged. Track the cost before they rewrite the story.</li>`;
     return;
   }
 
@@ -542,7 +554,7 @@ function renderDocuments(items) {
   list.innerHTML = "";
 
   if (!items.length) {
-    list.innerHTML = `<li class="empty-state">No documents added yet.</li>`;
+    list.innerHTML = `<li class="empty-state">No documents logged. Add the paper trail.</li>`;
     return;
   }
 
@@ -695,4 +707,4 @@ function copySummary() {
       document.execCommand("copy");
       alert("Case summary copied.");
     });
-    }
+}
