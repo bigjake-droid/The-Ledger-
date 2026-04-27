@@ -6,6 +6,15 @@
 
   <title>The Ledger</title>
 
+  <!-- App Icons / Favicons -->
+  <link rel="icon" type="image/png" sizes="192x192" href="ledger-192.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="ledger-512.png" />
+  <link rel="apple-touch-icon" href="ledger-192.png" />
+
+  <!-- Mobile / Browser Color -->
+  <meta name="theme-color" content="#121417" />
+
+  <!-- CSS -->
   <link rel="stylesheet" href="style.css" />
 </head>
 
@@ -15,7 +24,8 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="brand">
-        <img src="assets/ledger-logo.png" alt="The Ledger Logo" class="logo" />
+        <img src="ledger-192.png" alt="The Ledger Logo" class="logo" />
+
         <div>
           <h1>The Ledger</h1>
           <p>Civil Case Builder</p>
@@ -47,11 +57,13 @@
         </div>
 
         <div class="topbar-actions">
-          <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
+          <button id="deleteCaseBtn" class="danger-btn">
+            Delete Case
+          </button>
         </div>
       </header>
 
-      <!-- CASE DASHBOARD -->
+      <!-- DASHBOARD -->
       <section class="dashboard">
         <div class="stat-card">
           <span>Timeline</span>
@@ -83,14 +95,16 @@
         <button class="tab" data-tab="summary">Summary</button>
       </nav>
 
-      <!-- CONTENT AREA -->
+      <!-- CONTENT -->
       <section class="content">
 
         <!-- TIMELINE -->
         <div id="timeline" class="tab-panel active">
           <div class="panel-header">
             <h3>Timeline</h3>
-            <button class="small-btn" id="addTimelineBtn">+ Add Event</button>
+            <button class="small-btn" id="addTimelineBtn">
+              + Add Event
+            </button>
           </div>
 
           <div class="form-grid">
@@ -106,7 +120,9 @@
         <div id="evidence" class="tab-panel">
           <div class="panel-header">
             <h3>Evidence</h3>
-            <button class="small-btn" id="addEvidenceBtn">+ Add Evidence</button>
+            <button class="small-btn" id="addEvidenceBtn">
+              + Add Evidence
+            </button>
           </div>
 
           <div class="form-grid">
@@ -122,7 +138,9 @@
         <div id="damages" class="tab-panel">
           <div class="panel-header">
             <h3>Damages</h3>
-            <button class="small-btn" id="addDamageBtn">+ Add Damage</button>
+            <button class="small-btn" id="addDamageBtn">
+              + Add Damage
+            </button>
           </div>
 
           <div class="form-grid">
@@ -138,7 +156,9 @@
         <div id="documents" class="tab-panel">
           <div class="panel-header">
             <h3>Documents</h3>
-            <button class="small-btn" id="addDocumentBtn">+ Add Document</button>
+            <button class="small-btn" id="addDocumentBtn">
+              + Add Document
+            </button>
           </div>
 
           <div class="form-grid">
@@ -154,17 +174,19 @@
         <div id="summary" class="tab-panel">
           <div class="panel-header">
             <h3>Case Summary</h3>
-            <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
+            <button class="small-btn" id="copySummaryBtn">
+              Copy Summary
+            </button>
           </div>
 
           <textarea id="caseSummary" readonly></textarea>
         </div>
 
       </section>
-
     </main>
   </div>
 
+  <!-- JavaScript -->
   <script src="script.js"></script>
 </body>
 </html>
