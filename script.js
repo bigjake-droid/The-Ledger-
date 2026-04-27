@@ -1,245 +1,550 @@
-// ===== STORAGE =====
-let cases = JSON.parse(localStorage.getItem("ledger_cases")) || [];
-let activeCaseId = null;
+// script.js - The Ledger
 
-// ===== INIT =====
+let cases = JSON.parse(localStorage.getItem("ledger_cases")) || [];
+let activeCaseId = localStorage.getItem("ledger_active_case") || null;
+
 document.addEventListener("DOMContentLoaded", () => {
-  renderCases();
-  setupTabs();
   bindButtons();
+  bindTabs();
+  renderCases();
+  loadActiveCase();
 });
 
-// ===== CASES =====
-function renderCases() {
-  const list = document.getElementById("caseList");
-  list.innerHTML = "";
+/* ---------- STORAGE ---------- */
 
-  cases.forEach(c => {
-    const li = document.createElement("li");
-    li.textContent = c.name;
-    li.className = "case-item";
+function saveCases() {
+  localStorage.setItem("ledger_cases", JSON.stringify(cases));
+}
 
-    li.onclick = () => {
-      activeCaseId = c.id;
-      loadCase();
-    };
+function saveActiveCaseId() {
+  if (activeCaseId) {
+    localStorage.setItem("ledger_active_case", activeCaseId);
+  } else {
+    localStorage.removeItem("ledger_active_case");
+  }
+}
 
-    list.appendChild(li);
+/* ---------- HELPERS ---------- */
+
+function getActiveCase() {
+  return cases.find((c) => String(c.id) === String(activeCaseId));
+}
+
+function safeText(value) {
+  return String(value || "").replace(/[&<>"']/g, (char) => {
+    return {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    }[char];
   });
 }
 
-function newCase() {
-  const name = prompt("Case name?");
-  if (!name) return;
+function clearValue(id) {
+  const el = document.getElementById(id);
+  if (el) el.value = "";
+}
+
+/* ---------- BUTTONS ---------- */
+
+function bindButtons() {
+  document.getElementById("newCaseBtn")?.addEventListener("click", createNewCase);
+  document.getElementById("deleteCaseBtn")?.addEventListener("click", deleteActiveCase);
+
+  document.getElementById("addTimelineBtn")?.addEventListener("click", addTimelineEvent);
+  document.getElementById("addEvidenceBtn")?.addEventListener("click", addEvidenceItem);
+  document.getElementById("addDamageBtn")?.addEventListener("click", addDamageItem);
+  document.getElementById("addDocumentBtn")?.addEventListener("click", addDocumentItem);
+
+  document.getElementById("copySummaryBtn")?.addEventListener("click", copySummary);
+
+  document.getElementById("caseSearch")?.addEventListener("input", renderCases);
+}
+
+/* ---------- TABS ---------- */
+
+function bindTabs() {
+  const tabs = document.querySelectorAll(".tab");
+  const panels = document.querySelectorAll(".tab-panel");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.tab;
+
+      tabs.forEach((t) => t.classList.remove("active"));
+      panels.forEach((p) => p.classList.remove("active"));
+
+      tab.classList.add("active");
+      document.getElementById(target)?.classList.add("active");
+
+      buildSummary();
+    });
+  });
+}
+
+/* ---------- CASES ---------- */
+
+function createNewCase() {
+  const name = prompt("Name this civil case:");
+
+  if (!name || !name.trim()) return;
 
   const newCase = {
     id: Date.now(),
-    name,
+    name: name.trim(),
+    createdAt: new Date().toISOString(),
     timeline: [],
     evidence: [],
     damages: [],
     documents: []
   };
 
-  cases.push(newCase);
-  save();
+  cases.unshift(newCase);
+  activeCaseId = newCase.id;
+
+  saveCases();
+  saveActiveCaseId();
+
   renderCases();
+  loadActiveCase();
 }
 
-function deleteCase() {
-  if (!activeCaseId) return;
+function deleteActiveCase() {
+  const activeCase = getActiveCase();
 
-  cases = cases.filter(c => c.id !== activeCaseId);
-  activeCaseId = null;
+  if (!activeCase) {
+    alert("No case selected.");
+    return;
+  }
 
-  save();
+  const confirmed = confirm(`Delete "${activeCase.name}"? This cannot be undone.`);
+
+  if (!confirmed) return;
+
+  cases = cases.filter((c) => String(c.id) !== String(activeCaseId));
+  activeCaseId = cases.length ? cases[0].id : null;
+
+  saveCases();
+  saveActiveCaseId();
+
   renderCases();
-  clearUI();
+  loadActiveCase();
 }
 
-// ===== LOAD CASE =====
-function getActiveCase() {
-  return cases.find(c => c.id === activeCaseId);
+function renderCases() {
+  const list = document.getElementById("caseList");
+  const searchValue = document.getElementById("caseSearch")?.value.toLowerCase() || "";
+
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  const filteredCases = cases.filter((c) =>
+    c.name.toLowerCase().includes(searchValue)
+  );
+
+  if (!filteredCases.length) {
+    list.innerHTML = `<li class="empty-state">No cases found.</li>`;
+    return;
+  }
+
+  filteredCases.forEach((c) => {
+    const li = document.createElement("li");
+
+    li.className =
+      String(c.id) === String(activeCaseId)
+        ? "case-item active"
+        : "case-item";
+
+    li.innerHTML = `
+      <strong>${safeText(c.name)}</strong>
+      <span>${new Date(c.createdAt).toLocaleDateString()}</span>
+    `;
+
+    li.addEventListener("click", () => {
+      activeCaseId = c.id;
+      saveActiveCaseId();
+      renderCases();
+      loadActiveCase();
+    });
+
+    list.appendChild(li);
+  });
 }
 
-function loadCase() {
-  const c = getActiveCase();
-  if (!c) return;
+function loadActiveCase() {
+  if (!activeCaseId && cases.length) {
+    activeCaseId = cases[0].id;
+    saveActiveCaseId();
+  }
 
-  document.getElementById("activeCaseTitle").textContent = c.name;
+  const activeCase = getActiveCase();
+  const title = document.getElementById("activeCaseTitle");
 
-  renderList("timelineList", c.timeline);
-  renderList("evidenceList", c.evidence);
-  renderList("damagesList", c.damages);
-  renderList("documentsList", c.documents);
+  if (!activeCase) {
+    if (title) title.textContent = "No Case Selected";
+    clearAllLists();
+    updateCounts(null);
+    buildSummary();
+    return;
+  }
 
-  updateCounts();
+  if (title) title.textContent = activeCase.name;
+
+  renderActiveCaseData();
+}
+
+/* ---------- ADD DATA ---------- */
+
+function addTimelineEvent() {
+  const activeCase = getActiveCase();
+  if (!activeCase) return alert("Create or select a case first.");
+
+  const date = document.getElementById("timelineDate")?.value || "";
+  const title = document.getElementById("timelineTitle")?.value.trim() || "";
+  const notes = document.getElementById("timelineNotes")?.value.trim() || "";
+
+  if (!title) return alert("Timeline event needs a title.");
+
+  activeCase.timeline.push({
+    id: Date.now(),
+    date,
+    title,
+    notes
+  });
+
+  clearValue("timelineDate");
+  clearValue("timelineTitle");
+  clearValue("timelineNotes");
+
+  saveCases();
+  renderActiveCaseData();
+}
+
+function addEvidenceItem() {
+  const activeCase = getActiveCase();
+  if (!activeCase) return alert("Create or select a case first.");
+
+  const title = document.getElementById("evidenceTitle")?.value.trim() || "";
+  const type = document.getElementById("evidenceType")?.value.trim() || "";
+  const notes = document.getElementById("evidenceNotes")?.value.trim() || "";
+
+  if (!title) return alert("Evidence item needs a title.");
+
+  activeCase.evidence.push({
+    id: Date.now(),
+    title,
+    type,
+    notes
+  });
+
+  clearValue("evidenceTitle");
+  clearValue("evidenceType");
+  clearValue("evidenceNotes");
+
+  saveCases();
+  renderActiveCaseData();
+}
+
+function addDamageItem() {
+  const activeCase = getActiveCase();
+  if (!activeCase) return alert("Create or select a case first.");
+
+  const title = document.getElementById("damageTitle")?.value.trim() || "";
+  const amount = document.getElementById("damageAmount")?.value || "";
+  const notes = document.getElementById("damageNotes")?.value.trim() || "";
+
+  if (!title) return alert("Damage item needs a title.");
+
+  activeCase.damages.push({
+    id: Date.now(),
+    title,
+    amount,
+    notes
+  });
+
+  clearValue("damageTitle");
+  clearValue("damageAmount");
+  clearValue("damageNotes");
+
+  saveCases();
+  renderActiveCaseData();
+}
+
+function addDocumentItem() {
+  const activeCase = getActiveCase();
+  if (!activeCase) return alert("Create or select a case first.");
+
+  const title = document.getElementById("documentTitle")?.value.trim() || "";
+  const category = document.getElementById("documentCategory")?.value.trim() || "";
+  const notes = document.getElementById("documentNotes")?.value.trim() || "";
+
+  if (!title) return alert("Document needs a title.");
+
+  activeCase.documents.push({
+    id: Date.now(),
+    title,
+    category,
+    notes
+  });
+
+  clearValue("documentTitle");
+  clearValue("documentCategory");
+  clearValue("documentNotes");
+
+  saveCases();
+  renderActiveCaseData();
+}
+
+/* ---------- RENDER DATA ---------- */
+
+function renderActiveCaseData() {
+  const activeCase = getActiveCase();
+
+  if (!activeCase) {
+    clearAllLists();
+    updateCounts(null);
+    buildSummary();
+    return;
+  }
+
+  renderTimeline(activeCase.timeline);
+  renderEvidence(activeCase.evidence);
+  renderDamages(activeCase.damages);
+  renderDocuments(activeCase.documents);
+
+  updateCounts(activeCase);
   buildSummary();
 }
 
-// ===== LIST RENDER =====
-function renderList(id, items) {
-  const ul = document.getElementById(id);
-  ul.innerHTML = "";
+function renderTimeline(items) {
+  const list = document.getElementById("timelineList");
+  if (!list) return;
 
-  items.forEach(i => {
+  list.innerHTML = "";
+
+  if (!items.length) {
+    list.innerHTML = `<li class="empty-state">No timeline events yet.</li>`;
+    return;
+  }
+
+  items
+    .slice()
+    .sort((a, b) => String(a.date).localeCompare(String(b.date)))
+    .forEach((item) => {
+      const li = document.createElement("li");
+
+      li.innerHTML = `
+        <strong>${safeText(item.title)}</strong>
+        <span>${safeText(item.date || "No date")}</span>
+        <p>${safeText(item.notes)}</p>
+        <button class="delete-item-btn" onclick="deleteItem('timeline', ${item.id})">Delete</button>
+      `;
+
+      list.appendChild(li);
+    });
+}
+
+function renderEvidence(items) {
+  const list = document.getElementById("evidenceList");
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  if (!items.length) {
+    list.innerHTML = `<li class="empty-state">No evidence added yet.</li>`;
+    return;
+  }
+
+  items.forEach((item) => {
     const li = document.createElement("li");
-    li.textContent = i.title || JSON.stringify(i);
-    ul.appendChild(li);
+
+    li.innerHTML = `
+      <strong>${safeText(item.title)}</strong>
+      <span>${safeText(item.type || "Uncategorized")}</span>
+      <p>${safeText(item.notes)}</p>
+      <button class="delete-item-btn" onclick="deleteItem('evidence', ${item.id})">Delete</button>
+    `;
+
+    list.appendChild(li);
   });
 }
 
-// ===== ADD ITEMS =====
-function addTimeline() {
-  const c = getActiveCase();
-  if (!c) return;
+function renderDamages(items) {
+  const list = document.getElementById("damagesList");
+  if (!list) return;
 
-  const item = {
-    date: document.getElementById("timelineDate").value,
-    title: document.getElementById("timelineTitle").value,
-    notes: document.getElementById("timelineNotes").value
-  };
+  list.innerHTML = "";
 
-  if (!item.title) return;
+  if (!items.length) {
+    list.innerHTML = `<li class="empty-state">No damages added yet.</li>`;
+    return;
+  }
 
-  c.timeline.push(item);
-  save();
-  loadCase();
+  items.forEach((item) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <strong>${safeText(item.title)}</strong>
+      <span>$${safeText(item.amount || "0")}</span>
+      <p>${safeText(item.notes)}</p>
+      <button class="delete-item-btn" onclick="deleteItem('damages', ${item.id})">Delete</button>
+    `;
+
+    list.appendChild(li);
+  });
 }
 
-function addEvidence() {
-  const c = getActiveCase();
-  if (!c) return;
+function renderDocuments(items) {
+  const list = document.getElementById("documentsList");
+  if (!list) return;
 
-  const item = {
-    title: document.getElementById("evidenceTitle").value,
-    type: document.getElementById("evidenceType").value,
-    notes: document.getElementById("evidenceNotes").value
-  };
+  list.innerHTML = "";
 
-  if (!item.title) return;
+  if (!items.length) {
+    list.innerHTML = `<li class="empty-state">No documents added yet.</li>`;
+    return;
+  }
 
-  c.evidence.push(item);
-  save();
-  loadCase();
+  items.forEach((item) => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      <strong>${safeText(item.title)}</strong>
+      <span>${safeText(item.category || "General")}</span>
+      <p>${safeText(item.notes)}</p>
+      <button class="delete-item-btn" onclick="deleteItem('documents', ${item.id})">Delete</button>
+    `;
+
+    list.appendChild(li);
+  });
 }
 
-function addDamage() {
-  const c = getActiveCase();
-  if (!c) return;
+function clearAllLists() {
+  const ids = [
+    "timelineList",
+    "evidenceList",
+    "damagesList",
+    "documentsList"
+  ];
 
-  const item = {
-    title: document.getElementById("damageTitle").value,
-    amount: document.getElementById("damageAmount").value,
-    notes: document.getElementById("damageNotes").value
-  };
-
-  if (!item.title) return;
-
-  c.damages.push(item);
-  save();
-  loadCase();
+  ids.forEach((id) => {
+    const list = document.getElementById(id);
+    if (list) list.innerHTML = "";
+  });
 }
 
-function addDocument() {
-  const c = getActiveCase();
-  if (!c) return;
+/* ---------- DELETE ITEMS ---------- */
 
-  const item = {
-    title: document.getElementById("documentTitle").value,
-    category: document.getElementById("documentCategory").value,
-    notes: document.getElementById("documentNotes").value
-  };
+function deleteItem(section, itemId) {
+  const activeCase = getActiveCase();
+  if (!activeCase) return;
 
-  if (!item.title) return;
+  activeCase[section] = activeCase[section].filter((item) => item.id !== itemId);
 
-  c.documents.push(item);
-  save();
-  loadCase();
+  saveCases();
+  renderActiveCaseData();
 }
 
-// ===== COUNTS =====
-function updateCounts() {
-  const c = getActiveCase();
-  if (!c) return;
+/* ---------- COUNTS ---------- */
 
-  document.getElementById("timelineCount").textContent = c.timeline.length;
-  document.getElementById("evidenceCount").textContent = c.evidence.length;
-  document.getElementById("damagesCount").textContent = c.damages.length;
-  document.getElementById("docsCount").textContent = c.documents.length;
+function updateCounts(activeCase) {
+  document.getElementById("timelineCount").textContent =
+    activeCase ? activeCase.timeline.length : 0;
+
+  document.getElementById("evidenceCount").textContent =
+    activeCase ? activeCase.evidence.length : 0;
+
+  document.getElementById("damagesCount").textContent =
+    activeCase ? activeCase.damages.length : 0;
+
+  document.getElementById("docsCount").textContent =
+    activeCase ? activeCase.documents.length : 0;
 }
 
-// ===== SUMMARY =====
+/* ---------- SUMMARY ---------- */
+
 function buildSummary() {
-  const c = getActiveCase();
-  if (!c) return;
+  const activeCase = getActiveCase();
+  const summaryBox = document.getElementById("caseSummary");
 
-  let summary = `CASE: ${c.name}\n\n`;
+  if (!summaryBox) return;
 
-  summary += "TIMELINE:\n";
-  c.timeline.forEach(t => {
-    summary += `- ${t.date} | ${t.title}\n`;
-  });
+  if (!activeCase) {
+    summaryBox.value = "";
+    return;
+  }
 
-  summary += "\nEVIDENCE:\n";
-  c.evidence.forEach(e => {
-    summary += `- ${e.title} (${e.type})\n`;
-  });
+  let summary = "";
 
-  summary += "\nDAMAGES:\n";
-  c.damages.forEach(d => {
-    summary += `- ${d.title}: $${d.amount}\n`;
-  });
+  summary += `CASE: ${activeCase.name}\n`;
+  summary += `CREATED: ${new Date(activeCase.createdAt).toLocaleString()}\n\n`;
 
-  document.getElementById("caseSummary").value = summary;
+  summary += `TIMELINE:\n`;
+  if (activeCase.timeline.length) {
+    activeCase.timeline.forEach((item) => {
+      summary += `- ${item.date || "No date"} | ${item.title}\n`;
+      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+    });
+  } else {
+    summary += `- No timeline events added.\n`;
+  }
+
+  summary += `\nEVIDENCE:\n`;
+  if (activeCase.evidence.length) {
+    activeCase.evidence.forEach((item) => {
+      summary += `- ${item.title}`;
+      if (item.type) summary += ` (${item.type})`;
+      summary += `\n`;
+      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+    });
+  } else {
+    summary += `- No evidence added.\n`;
+  }
+
+  summary += `\nDAMAGES:\n`;
+  if (activeCase.damages.length) {
+    activeCase.damages.forEach((item) => {
+      summary += `- ${item.title}: $${item.amount || "0"}\n`;
+      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+    });
+  } else {
+    summary += `- No damages added.\n`;
+  }
+
+  summary += `\nDOCUMENTS:\n`;
+  if (activeCase.documents.length) {
+    activeCase.documents.forEach((item) => {
+      summary += `- ${item.title}`;
+      if (item.category) summary += ` (${item.category})`;
+      summary += `\n`;
+      if (item.notes) summary += `  Notes: ${item.notes}\n`;
+    });
+  } else {
+    summary += `- No documents added.\n`;
+  }
+
+  summaryBox.value = summary;
 }
 
-// ===== TABS =====
-function setupTabs() {
-  const tabs = document.querySelectorAll(".tab");
-  const panels = document.querySelectorAll(".tab-panel");
+function copySummary() {
+  const summaryBox = document.getElementById("caseSummary");
 
-  tabs.forEach(tab => {
-    tab.onclick = () => {
-      tabs.forEach(t => t.classList.remove("active"));
-      panels.forEach(p => p.classList.remove("active"));
+  if (!summaryBox || !summaryBox.value.trim()) {
+    alert("No summary to copy.");
+    return;
+  }
 
-      tab.classList.add("active");
-      document.getElementById(tab.dataset.tab).classList.add("active");
-    };
-  });
-}
+  summaryBox.select();
+  summaryBox.setSelectionRange(0, 99999);
 
-// ===== BUTTONS =====
-function bindButtons() {
-  document.getElementById("newCaseBtn").onclick = newCase;
-  document.getElementById("deleteCaseBtn").onclick = deleteCase;
-
-  document.getElementById("addTimelineBtn").onclick = addTimeline;
-  document.getElementById("addEvidenceBtn").onclick = addEvidence;
-  document.getElementById("addDamageBtn").onclick = addDamage;
-  document.getElementById("addDocumentBtn").onclick = addDocument;
-
-  document.getElementById("copySummaryBtn").onclick = () => {
-    const txt = document.getElementById("caseSummary");
-    txt.select();
-    document.execCommand("copy");
-  };
-}
-
-// ===== UTILS =====
-function clearUI() {
-  document.getElementById("activeCaseTitle").textContent = "No Case Selected";
-
-  ["timelineList","evidenceList","damagesList","documentsList"]
-    .forEach(id => document.getElementById(id).innerHTML = "");
-
-  ["timelineCount","evidenceCount","damagesCount","docsCount"]
-    .forEach(id => document.getElementById(id).textContent = "0");
-
-  document.getElementById("caseSummary").value = "";
-}
-
-function save() {
-  localStorage.setItem("ledger_cases", JSON.stringify(cases));
+  navigator.clipboard
+    .writeText(summaryBox.value)
+    .then(() => alert("Case summary copied."))
+    .catch(() => {
+      document.execCommand("copy");
+      alert("Case summary copied.");
+    });
 }
