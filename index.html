@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ledger | Record. Prepare. Advance.</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0a0a0c">
+    <meta name="theme-color" content="#000000">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,14 +14,25 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
+    <div id="splashScreen" class="splash-screen">
+        <img src="ledger-512.png" alt="The Ledger Logo" class="splash-logo">
+        <h1 class="splash-title">THE LEDGER</h1>
+        <p class="splash-mission">TO FORGE SCATTERED EVIDENCE INTO UNDENIABLE LEVERAGE.<br>CONTROL THE RECORD. CONTROL THE OUTCOME.</p>
+        <button class="btn-gold-glow" id="btnEnterApp">INITIALIZE COMMAND CENTER</button>
+    </div>
+
     <div class="app-container">
         
         <aside class="sidebar">
             <div class="brand-area">
-                <img src="ledger-512.png" alt="Logo" class="main-logo" onerror="this.style.display='none'">
+                <div class="brand-text">
+                    <h1>The<br><span class="highlight">LEDGER</span></h1>
+                    <p>RECORD. PREPARE. ADVANCE.</p>
+                </div>
             </div>
 
-            <button class="btn-red-outline full-width">+ NEW CASE</button>
+            <button class="btn-red-outline full-width" id="btnNewCaseSide">+ NEW CASE</button>
 
             <div class="search-container">
                 <input type="text" placeholder="🔍 Search cases...">
@@ -46,7 +57,7 @@
             <header class="top-header">
                 <div class="header-titles">
                     <p class="eyebrow">🛡️ ACTIVE CIVIL FILE</p>
-                    <h2>NO CASE SELECTED</h2>
+                    <h2 id="activeCaseTitle">JOHNSTOWN / LARIMER</h2>
                     <p class="subtitle">Select a case or create a new one to begin building your record.</p>
                 </div>
                 <div class="header-actions">
@@ -99,7 +110,7 @@
                     <h3>CONTROL THE OUTCOME.</h3>
                     <p>Document everything. Prove everything. Win.</p>
                 </div>
-                <button class="btn-gold-glow">+ ADD TIMELINE EVENT</button>
+                <button class="btn-gold-glow" id="btnAddHero">+ ADD TIMELINE EVENT</button>
             </div>
 
             <div class="status-grid">
