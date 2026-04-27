@@ -19,10 +19,6 @@
         <aside class="sidebar">
             <div class="brand-area">
                 <img src="ledger-512.png" alt="Logo" class="main-logo" onerror="this.style.display='none'">
-                <div class="brand-text">
-                    <h1>The<br><span class="highlight">LEDGER</span></h1>
-                    <p>RECORD. PREPARE. ADVANCE.</p>
-                </div>
             </div>
 
             <button class="btn-red-outline full-width">+ NEW CASE</button>
@@ -52,16 +48,14 @@
                     <p class="eyebrow">🛡️ ACTIVE CIVIL FILE</p>
                     <h2>NO CASE SELECTED</h2>
                     <p class="subtitle">Select a case or create a new one to begin building your record.</p>
-                <div class="header-actions">
-    <button class="btn-red" id="btnDelete">🗑️ DELETE CASE</button>
-    <button class="btn-gold-outline" onclick="generateReport()">📥 EXPORT PDF</button>
-    <button class="btn-gold-outline" onclick="exportData()">💾 BACKUP DATA</button>
-    <button class="btn-gold-outline" id="btnImport">📤 IMPORT DATA</button>
-    <input type="file" id="importFile" accept=".json" style="display:none">
                 </div>
-                
-            
-            
+                <div class="header-actions">
+                    <button class="btn-red" id="btnDelete">🗑️ DELETE CASE</button>
+                    <button class="btn-gold-outline" onclick="generateReport()">📥 EXPORT PDF</button>
+                    <button class="btn-gold-outline" onclick="exportData()">💾 BACKUP DATA</button>
+                    <button class="btn-gold-outline" id="btnImport">📤 IMPORT DATA</button>
+                    <input type="file" id="importFile" accept=".json" style="display:none">
+                </div>
             </header>
 
             <div class="stats-row">
