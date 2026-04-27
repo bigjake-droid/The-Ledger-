@@ -19,8 +19,8 @@
   <link rel="icon" type="image/png" sizes="512x512" href="ledger-512.png" />
   <link rel="apple-touch-icon" href="ledger-192.png" />
 
-  <!-- CSS (cache-busted) -->
-  <link rel="stylesheet" href="style.css?v=2" />
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 
 <body>
@@ -64,7 +64,7 @@
       </p>
     </section>
 
-    <!-- APP -->
+    <!-- LEDGER APP -->
     <section id="ledgerApp" class="ledger-app hidden">
 
       <!-- SIDEBAR -->
@@ -93,15 +93,22 @@
       <!-- MAIN -->
       <main class="main">
 
+        <!-- TOP BAR -->
         <header class="topbar">
           <div>
             <p class="eyebrow">Active Civil File</p>
             <h2 id="activeCaseTitle">No Case Selected</h2>
           </div>
 
-          <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
+          <div class="topbar-actions">
+            <button id="deleteCaseBtn" class="danger-btn">Delete Case</button>
+            <button id="exportCaseBtn" class="small-btn">Export Case</button>
+            <button id="importCaseBtn" class="small-btn">Import Case</button>
+            <input id="importCaseFile" type="file" accept="application/json" hidden />
+          </div>
         </header>
 
+        <!-- DASHBOARD -->
         <section class="dashboard">
           <div class="stat-card">
             <span>Timeline</span>
@@ -124,6 +131,7 @@
           </div>
         </section>
 
+        <!-- TABS -->
         <nav class="tabs">
           <button class="tab active" data-tab="timeline">Timeline</button>
           <button class="tab" data-tab="evidence">Evidence</button>
@@ -132,6 +140,7 @@
           <button class="tab" data-tab="summary">Summary</button>
         </nav>
 
+        <!-- CONTENT -->
         <section class="content">
 
           <!-- TIMELINE -->
@@ -143,7 +152,7 @@
 
             <div class="form-grid">
               <input id="timelineDate" type="date" />
-              <input id="timelineTitle" placeholder="Event title" />
+              <input id="timelineTitle" type="text" placeholder="Event title" />
               <textarea id="timelineNotes" placeholder="What happened?"></textarea>
             </div>
 
@@ -158,12 +167,12 @@
             </div>
 
             <div class="form-grid">
-              <input id="evidenceTitle" placeholder="Evidence title" />
-              <input id="evidenceType" placeholder="Type" />
-              <textarea id="evidenceNotes" placeholder="Notes"></textarea>
+              <input id="evidenceTitle" type="text" placeholder="Evidence title" />
+              <input id="evidenceType" type="text" placeholder="Type: photo, receipt, email, message..." />
+              <textarea id="evidenceNotes" placeholder="Why does this matter?"></textarea>
             </div>
 
-            <ul id="evidenceList"></ul>
+            <ul id="evidenceList" class="item-list"></ul>
           </div>
 
           <!-- DAMAGES -->
@@ -174,12 +183,12 @@
             </div>
 
             <div class="form-grid">
-              <input id="damageTitle" placeholder="Damage title" />
-              <input id="damageAmount" type="number" placeholder="$" />
-              <textarea id="damageNotes"></textarea>
+              <input id="damageTitle" type="text" placeholder="Damage title" />
+              <input id="damageAmount" type="number" placeholder="Amount $" />
+              <textarea id="damageNotes" placeholder="Details / proof / reason"></textarea>
             </div>
 
-            <ul id="damagesList"></ul>
+            <ul id="damagesList" class="item-list"></ul>
           </div>
 
           <!-- DOCUMENTS -->
@@ -190,19 +199,19 @@
             </div>
 
             <div class="form-grid">
-              <input id="documentTitle" placeholder="Title" />
-              <input id="documentCategory" placeholder="Category" />
-              <textarea id="documentNotes"></textarea>
+              <input id="documentTitle" type="text" placeholder="Document title" />
+              <input id="documentCategory" type="text" placeholder="Category: demand, exhibit, letter..." />
+              <textarea id="documentNotes" placeholder="Notes / purpose"></textarea>
             </div>
 
-            <ul id="documentsList"></ul>
+            <ul id="documentsList" class="item-list"></ul>
           </div>
 
           <!-- SUMMARY -->
           <div id="summary" class="tab-panel">
             <div class="panel-header">
               <h3>Case Summary</h3>
-              <button class="small-btn" id="copySummaryBtn">Copy</button>
+              <button class="small-btn" id="copySummaryBtn">Copy Summary</button>
             </div>
 
             <textarea id="caseSummary" readonly></textarea>
@@ -210,23 +219,17 @@
 
         </section>
 
+        <p class="app-disclaimer">
+          The Ledger is a civil case organization tool. It does not provide legal advice,
+          create an attorney-client relationship, or replace review by a licensed attorney.
+        </p>
+
       </main>
     </section>
 
   </main>
 
-  <!-- JS (cache-busted) -->
-  <script src="script.js?v=2"></script>
-
-  <!-- Service Worker -->
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("sw.js")
-          .then(reg => console.log("Ledger SW active:", reg.scope))
-          .catch(err => console.error("SW failed:", err));
-      });
-    }
-  </script>
+  <!-- JS -->
+  <script src="script.js?v=5"></script>
 </body>
 </html>
