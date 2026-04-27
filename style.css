@@ -1,4 +1,6 @@
-/* style.css - The Ledger */
+.hidden {
+  display: none !important;
+}/* style.css - The Ledger */
 
 /* ===== COLORS ===== */
 
