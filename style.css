@@ -44,7 +44,7 @@ h1, h2, h3, .number, .btn-gold-glow, .splash-title { font-family: 'Bebas Neue', 
 }
 .splash-screen.hidden { opacity: 0; pointer-events: none; }
 .splash-logo { width: 350px; margin-bottom: 30px; } 
-.splash-title { font-size: 5rem; line-height: 1; margin-bottom: 10px; color: #fff; display: none; /* Hidden since text is in the new logo */ }
+.splash-title { display: none; }
 .splash-mission { color: var(--gold-bright); font-size: 1rem; letter-spacing: 2px; margin-bottom: 40px; max-width: 600px; line-height: 1.6; }
 
 .app-container { display: flex; height: 100%; }
@@ -61,8 +61,24 @@ h1, h2, h3, .number, .btn-gold-glow, .splash-title { font-family: 'Bebas Neue', 
 }
 
 .brand-area { text-align: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-dim); padding-bottom: 20px;}
-.brand-text h1 { font-size: 3rem; line-height: 0.9; }
-.brand-text .highlight { font-size: 2rem; letter-spacing: 3px; color: #ccc; }
+
+/* SCRIPT FONT & GRADIENT OVERRIDE */
+.brand-text h1 { 
+    font-family: 'Great Vibes', cursive;
+    font-size: 3.5rem; 
+    line-height: 0.9; 
+    font-weight: normal;
+    letter-spacing: 2px;
+    background: linear-gradient(to bottom, #ffffff 40%, var(--red-main) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 5px;
+}
+.brand-text .highlight { 
+    font-size: 4rem; 
+}
 .brand-text p { font-size: 0.75rem; color: var(--gold-bright); letter-spacing: 2px; margin-top: 5px; }
 
 .btn-red-outline { background: transparent; border: 1px solid var(--red-main); color: var(--red-main); padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
