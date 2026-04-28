@@ -1,18 +1,15 @@
 :root {
-    --bg-page: #f8fafc; /* Very light slate for contrast */
-    --bg-panel: #ffffff; /* Pure white cards */
+    --bg-page: #f8fafc; 
+    --bg-panel: #ffffff; 
     
-    /* The Surgical Navy Theme */
     --navy-main: #0B192C; 
     --navy-light: #1A365D;
     
-    /* Crisp Borders */
-    --border-main: #0B192C; /* Solid navy borders */
+    --border-main: #0B192C; 
     --border-light: #cbd5e1;
     
-    /* Text Hierarchy */
-    --text-main: #0B192C; /* Navy text */
-    --text-muted: #475569; /* Slate grey */
+    --text-main: #0B192C; 
+    --text-muted: #475569; 
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -25,13 +22,13 @@ body {
     overflow: hidden; 
 }
 
-h1, h2, h3, .number, .btn-navy-solid, .btn-navy-outline { font-family: 'Cinzel', serif; font-weight: 800; letter-spacing: 1px; }
+h1, h2, h3, .number, .btn-navy-solid, .btn-navy-outline, .btn-white-solid { font-family: 'Cinzel', serif; font-weight: 800; letter-spacing: 1px; }
 
 /* --- SPLASH SCREEN --- */
 .splash-screen {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: #ffffff; 
+    background: var(--navy-main); /* Switched to Navy */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -43,7 +40,18 @@ h1, h2, h3, .number, .btn-navy-solid, .btn-navy-outline { font-family: 'Cinzel',
 }
 .splash-screen.hidden { opacity: 0; pointer-events: none; }
 .splash-logo { width: 350px; margin-bottom: 30px; } 
-.splash-mission { color: var(--navy-main); font-family: 'Inter', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-bottom: 40px; font-weight: 800; line-height: 1.6; }
+.splash-mission { color: #ffffff; font-family: 'Inter', sans-serif; font-size: 1rem; letter-spacing: 2px; margin-bottom: 40px; font-weight: 800; line-height: 1.6; }
+
+/* --- BUTTONS --- */
+.btn-navy-solid { background: var(--navy-main); border: 2px solid var(--navy-main); color: #fff; padding: 12px 20px; cursor: pointer; transition: 0.2s; font-size: 1rem; }
+.btn-navy-solid:hover { background: #fff; color: var(--navy-main); }
+.btn-navy-outline { background: transparent; border: 2px solid var(--navy-main); color: var(--navy-main); padding: 10px 15px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+.btn-navy-outline:hover { background: var(--navy-main); color: #fff; }
+
+.btn-white-solid { background: #ffffff; border: 2px solid #ffffff; color: var(--navy-main); padding: 15px 30px; cursor: pointer; transition: 0.2s; font-size: 1.2rem; }
+.btn-white-solid:hover { background: transparent; color: #ffffff; }
+
+.full-width { width: 100%; }
 
 .app-container { display: flex; height: 100%; }
 
@@ -72,13 +80,6 @@ h1, h2, h3, .number, .btn-navy-solid, .btn-navy-outline { font-family: 'Cinzel',
 .empty-state-cases { border: 1px dashed var(--navy-main); padding: 30px 20px; text-align: center; color: var(--navy-main); font-size: 0.85rem; font-weight: 600; }
 
 .sidebar-footer { margin-top: auto; text-align: center; color: var(--navy-main); font-size: 0.8rem; line-height: 1.8; border-top: 2px solid var(--navy-main); padding-top: 15px; }
-
-/* --- BUTTONS --- */
-.btn-navy-solid { background: var(--navy-main); border: 2px solid var(--navy-main); color: #fff; padding: 12px 20px; cursor: pointer; transition: 0.2s; font-size: 1rem; }
-.btn-navy-solid:hover { background: #fff; color: var(--navy-main); }
-.btn-navy-outline { background: transparent; border: 2px solid var(--navy-main); color: var(--navy-main); padding: 10px 15px; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
-.btn-navy-outline:hover { background: var(--navy-main); color: #fff; }
-.full-width { width: 100%; }
 
 /* --- MAIN CONTENT --- */
 .main-content { flex-grow: 1; padding: 40px 50px; overflow-y: auto; background: var(--bg-page); }
