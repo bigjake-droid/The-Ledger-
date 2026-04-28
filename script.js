@@ -3,30 +3,34 @@ let state = {
     caseName: "JOHNSTOWN / LARIMER",
     totalDamages: 105000, 
     pressureScore: 45,
-    entries: [{desc: "Initial Jeep Seizure & Lost Income", hit: 105000, tags: [], date: "8/20/2025"}],
+    entries: [{
+        desc: "Initial Jeep Seizure & Lost Income", 
+        hit: 105000, 
+        category: "Direct Economic Loss",
+        target: "Law Enforcement / State",
+        tags: [], 
+        date: "8/20/2025"
+    }],
     evidence: []
 };
 
 // --- 2. INITIALIZATION & WIRING ---
 window.onload = () => {
     loadData();
-    injectModalStyles();
+    injectModalStyles(); // Handled purely by CSS now, but kept for structure
     wireButtons();
     updateUI();
 };
 
 function wireButtons() {
-    // Splash Screen Entrance
     const enterBtn = document.getElementById('btnEnterApp');
     if(enterBtn) enterBtn.addEventListener('click', () => {
         document.getElementById('splashScreen').classList.add('hidden');
     });
 
-    // Hero Button Modal
     const addBtn = document.getElementById('btnAddHero');
     if(addBtn) addBtn.addEventListener('click', openEntryModal);
 
-    // Delete Case / Reset
     const delBtn = document.getElementById('btnDelete');
     if(delBtn) delBtn.addEventListener('click', () => {
         if(confirm("WARNING: This will wipe the current case data. Proceed?")) {
@@ -35,7 +39,6 @@ function wireButtons() {
         }
     });
 
-    // New Case Button (Sidebar)
     const newCaseBtn = document.getElementById('btnNewCaseSide');
     if(newCaseBtn) newCaseBtn.addEventListener('click', () => {
         let name = prompt("Enter new Case Target (e.g., Victory Motors):");
@@ -46,7 +49,6 @@ function wireButtons() {
         }
     });
 
-    // Import Button (Mobile-Safe)
     const importBtn = document.getElementById('btnImport');
     const importFile = document.getElementById('importFile');
     if(importBtn && importFile) {
@@ -71,34 +73,28 @@ function wireButtons() {
                 }
             };
             reader.readAsText(file);
-            e.target.value = ''; // Reset
+            e.target.value = ''; 
         };
     }
 
-    // Pressure Checkboxes
     const checkboxes = document.querySelectorAll('.requests-panel input[type="checkbox"]');
     checkboxes.forEach(box => {
         box.addEventListener('change', (e) => {
             if(e.target.checked) {
-                addPressure(5);
+                state.pressureScore += 5;
             } else {
                 state.pressureScore -= 5;
-                saveData();
-                updateUI();
             }
+            if(state.pressureScore > 100) state.pressureScore = 100;
+            if(state.pressureScore < 0) state.pressureScore = 0;
+            saveData();
+            updateUI();
         });
     });
 }
 
 // --- 3. CORE LOGIC ---
-function addPressure(amount) {
-    state.pressureScore += amount;
-    if(state.pressureScore > 100) state.pressureScore = 100;
-    saveData();
-    updateUI();
-}
-
-function logImpact(desc, baseAmt, parental, indifference) {
+function logImpact(desc, baseAmt, category, target, parental, indifference) {
     let multiplier = 1.0;
     let tags = [];
     
@@ -107,13 +103,21 @@ function logImpact(desc, baseAmt, parental, indifference) {
 
     const hit = baseAmt * multiplier;
     state.totalDamages += hit;
-    state.entries.unshift({ desc: desc, hit: hit, tags: tags, date: new Date().toLocaleDateString() });
+    
+    state.entries.unshift({ 
+        desc: desc, 
+        hit: hit, 
+        category: category,
+        target: target,
+        tags: tags, 
+        date: new Date().toLocaleDateString() 
+    });
     
     saveData();
     updateUI();
 }
 
-// Export JSON Backup
+// Export JSON Backup 
 function exportData() {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
@@ -149,26 +153,15 @@ function updateUI() {
 
     document.getElementById('dashTotal').innerText = `$${state.totalDamages.toLocaleString()}`;
     document.getElementById('dashPressure').innerText = state.pressureScore;
-    document.getElementById('evidenceCount').innerText = state.evidence.length;
+    document.getElementById('evidenceCount').innerText = state.evidence ? state.evidence.length : 0;
     
-    const gauge = document.querySelector('.gauge-circle span');
-    if(gauge) gauge.innerText = `${state.pressureScore}%`;
+    const eventCount = document.querySelector('.stat-box:nth-child(1) .number');
+    if(eventCount) eventCount.innerText = state.entries.length;
 }
 
-// --- 5. TACTICAL MODAL SYSTEM (DOM INJECTION) ---
+// --- 5. TACTICAL MODAL SYSTEM (GRANULAR CIVIL SUIT MATRIX) ---
 function injectModalStyles() {
-    const style = document.createElement('style');
-    style.innerHTML = `
-        .tactical-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; backdrop-filter: blur(5px); }
-        .tactical-modal { background: var(--bg-card); border: 1px solid var(--gold-dim); padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 0 40px rgba(229, 176, 92, 0.15); font-family: 'Inter', sans-serif; }
-        .tactical-modal h3 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: var(--gold-bright); margin-bottom: 20px; letter-spacing: 1px; }
-        .t-input { width: 100%; background: #050505; border: 1px solid var(--border-dim); color: white; padding: 15px; margin-bottom: 15px; border-radius: 4px; font-size: 1rem; }
-        .t-input:focus { outline: none; border-color: var(--gold-bright); }
-        .t-check-row { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; color: #ccc; cursor: pointer; background: #000; padding: 12px; border: 1px solid var(--border-dim); border-radius: 4px; }
-        .t-check-row input { accent-color: var(--gold-bright); width: 18px; height: 18px; }
-        .t-actions { display: flex; gap: 10px; margin-top: 25px; }
-    `;
-    document.head.appendChild(style);
+    // Styles moved entirely to style.css for cleaner architecture.
 }
 
 function openEntryModal() {
@@ -181,20 +174,38 @@ function openEntryModal() {
     
     overlay.innerHTML = `
         <div class="tactical-modal">
-            <h3>LOG ECONOMIC IMPACT</h3>
-            <input type="text" id="mDesc" class="t-input" placeholder="Description (e.g., Lost Wages, Tow Fee)">
-            <input type="number" id="mAmt" class="t-input" placeholder="Base Amount ($)">
+            <h3>LOG CIVIL DAMAGES</h3>
+            
+            <label class="t-label">NATURE OF DAMAGES</label>
+            <select id="mCategory" class="t-input">
+                <option value="Direct Economic Loss">Direct Economic Loss (Base)</option>
+                <option value="Consequential Damages">Consequential Damages (Out of Pocket)</option>
+                <option value="Punitive / Statutory">Punitive / Statutory Violations</option>
+            </select>
+
+            <label class="t-label">TARGET DEFENDANT</label>
+            <select id="mTarget" class="t-input">
+                <option value="Victory Motors">Victory Motors</option>
+                <option value="Law Enforcement / State">Law Enforcement / State</option>
+                <option value="Other / Third Party">Other / Third Party</option>
+            </select>
+
+            <label class="t-label">INCIDENT DESCRIPTION</label>
+            <input type="text" id="mDesc" class="t-input" placeholder="e.g., Lost Wages, Illegal Seizure">
+            
+            <label class="t-label">BASE FINANCIAL HIT ($)</label>
+            <input type="number" id="mAmt" class="t-input" placeholder="0.00">
             
             <label class="t-check-row">
-                <input type="checkbox" id="mParental"> 2.5x Parental / Caregiver Tax
+                <input type="checkbox" id="mParental"> Apply 2.5x Parental / Caregiver Tax
             </label>
             <label class="t-check-row">
-                <input type="checkbox" id="mIndiff"> 10x Corporate Indifference Tax
+                <input type="checkbox" id="mIndiff"> Apply 10x Corporate Indifference Multiplier
             </label>
             
             <div class="t-actions">
-                <button class="btn-gold-outline full-width" onclick="document.getElementById('entryModal').remove()">CANCEL</button>
-                <button class="btn-red full-width" id="mSave">RECORD IMPACT</button>
+                <button class="btn-navy-outline full-width" onclick="document.getElementById('entryModal').remove()">CANCEL</button>
+                <button class="btn-navy-solid full-width" id="mSave">SUBMIT TO LEDGER</button>
             </div>
         </div>
     `;
@@ -203,20 +214,22 @@ function openEntryModal() {
     document.getElementById('mSave').addEventListener('click', () => {
         const desc = document.getElementById('mDesc').value;
         const amt = parseFloat(document.getElementById('mAmt').value);
+        const category = document.getElementById('mCategory').value;
+        const target = document.getElementById('mTarget').value;
         const pTax = document.getElementById('mParental').checked;
         const iTax = document.getElementById('mIndiff').checked;
 
-        if(!desc || !amt) { alert("Description and Amount required."); return; }
+        if(!desc || !amt) { alert("Description and Amount required to build the record."); return; }
 
-        logImpact(desc, amt, pTax, iTax);
+        logImpact(desc, amt, category, target, pTax, iTax);
         document.getElementById('entryModal').remove();
     });
 }
 
-// --- 6. PDF EXPORT ENGINE ---
+// --- 6. PDF EXPORT ENGINE (FORENSIC AUDIT FORMAT) ---
 function generateReport() {
     if (!window.jspdf) {
-        alert("PDF Engine loading... please try again in a few seconds.");
+        alert("PDF Engine loading... please wait.");
         return;
     }
 
@@ -225,8 +238,6 @@ function generateReport() {
 
     const logo = new Image();
     logo.crossOrigin = "Anonymous"; 
-    
-    // POINTED TO NEW LOGO
     logo.src = "1000013825-Picsart-BackgroundRemover.png"; 
 
     logo.onload = function() {
@@ -247,34 +258,34 @@ function generateReport() {
 function buildPdfContent(doc, startY) {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text("OFFICIAL STATEMENT OF ACCOUNT & ECONOMIC IMPACT", 105, startY, null, null, "center");
+    doc.text("FORENSIC STATEMENT OF CIVIL DAMAGES", 105, startY, null, null, "center");
     
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.text(`Generated: ${new Date().toLocaleString()}`, 105, startY + 8, null, null, "center");
-    doc.text(`Target: ${state.caseName || "Active Case File"}`, 105, startY + 13, null, null, "center");
+    doc.text(`Active Case File: ${state.caseName || "Unassigned"}`, 105, startY + 13, null, null, "center");
 
     let boxY = startY + 25;
-    doc.setDrawColor(0);
-    doc.setFillColor(240, 240, 240);
+    doc.setDrawColor(11, 25, 44); // Navy border
+    doc.setLineWidth(0.5);
+    doc.setFillColor(255, 255, 255);
     doc.rect(20, boxY, 170, 30, "FD");
 
     doc.setFont("helvetica", "bold");
     doc.setFontSize(14);
-    doc.text(`TOTAL CALCULATED DAMAGES: $${state.totalDamages.toLocaleString()}`, 25, boxY + 13);
+    doc.text(`TOTAL ASSESSED LIABILITY: $${state.totalDamages.toLocaleString()}`, 25, boxY + 13);
     doc.setFontSize(12);
-    doc.setTextColor(150, 0, 0); 
     doc.text(`Documented Legal Pressure Score: ${state.pressureScore}/100`, 25, boxY + 23);
-    doc.setTextColor(0, 0, 0);
 
     let sectionY = boxY + 45;
     doc.setFont("helvetica", "bold");
-    doc.text("ITEMIZED ECONOMIC IMPACT LEDGER", 20, sectionY);
-    doc.setLineWidth(0.5);
+    doc.setFontSize(12);
+    doc.text("ITEMIZED ECONOMIC IMPACT MATRIX", 20, sectionY);
+    doc.setLineWidth(1);
     doc.line(20, sectionY + 3, 190, sectionY + 3);
 
     doc.setFont("helvetica", "normal");
-    doc.setFontSize(11);
+    doc.setFontSize(10);
     let yPos = sectionY + 15;
 
     if (state.entries.length === 0) {
@@ -282,9 +293,14 @@ function buildPdfContent(doc, startY) {
     } else {
         state.entries.forEach(entry => {
             if (yPos > 270) { doc.addPage(); yPos = 20; }
+            
             doc.setFont("helvetica", "bold");
-            doc.text(`${entry.date} - ${entry.desc}`, 20, yPos);
+            doc.text(`${entry.date} | Target: ${entry.target || "N/A"}`, 20, yPos);
             doc.text(`$${entry.hit.toLocaleString()}`, 190, yPos, null, null, "right");
+            
+            yPos += 6;
+            doc.setFont("helvetica", "normal");
+            doc.text(`[${entry.category || "Uncategorized"}] - ${entry.desc}`, 20, yPos);
             
             if (entry.tags && entry.tags.length > 0) {
                 yPos += 6;
@@ -293,7 +309,7 @@ function buildPdfContent(doc, startY) {
                 doc.setTextColor(100, 100, 100);
                 doc.text(`Applied Multipliers: ${entry.tags.join(' | ')}`, 25, yPos);
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(11);
+                doc.setFontSize(10);
             }
             yPos += 12;
             doc.setDrawColor(200, 200, 200);
@@ -302,5 +318,5 @@ function buildPdfContent(doc, startY) {
         });
     }
 
-    doc.save("Ledger_Statement_Of_Account.pdf");
+    doc.save("Forensic_Damages_Matrix.pdf");
 }
