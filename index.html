@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ledger | Civil Litigation Tools</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="theme-color" content="#0B192C">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,8 @@
     <div id="splashScreen" class="splash-screen">
         <img src="1000013825-Picsart-BackgroundRemover.png" alt="The Ledger Logo" class="splash-logo" onerror="this.style.display='none'">
         <p class="splash-mission">DOCUMENT EVERYTHING. BE ORGANIZED. BE ASSERTIVE.<br>We can help with the rest.</p>
-        <button class="btn-navy-solid" id="btnEnterApp">INITIALIZE COMMAND CENTER</button>
+        
+        <button class="btn-white-solid" onclick="document.getElementById('splashScreen').classList.add('hidden')">INITIALIZE COMMAND CENTER</button>
     </div>
 
     <div class="app-container">
