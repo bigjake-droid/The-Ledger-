@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ledger | Civil Litigation Tools</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0B192C">
+    <meta name="theme-color" content="#ffffff">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +18,6 @@
     <div id="splashScreen" class="splash-screen">
         <img src="1000013825-Picsart-BackgroundRemover.png" alt="The Ledger Logo" class="splash-logo" onerror="this.style.display='none'">
         <p class="splash-mission">DOCUMENT EVERYTHING. BE ORGANIZED. BE ASSERTIVE.<br>We can help with the rest.</p>
-        
         <button class="btn-white-solid" onclick="document.getElementById('splashScreen').classList.add('hidden')">INITIALIZE COMMAND CENTER</button>
     </div>
 
@@ -70,12 +69,12 @@
                 <div class="stat-box">
                     <div class="stat-data">
                         <span class="label">TIMELINE EVENTS</span>
-                        <span class="number">0</span>
+                        <span class="number" id="eventCount">0</span>
                     </div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-data">
-                        <span class="label">EVIDENCE LOGGED</span>
+                        <span class="label">EXHIBITS LOGGED</span>
                         <span class="number" id="evidenceCount">0</span>
                     </div>
                 </div>
@@ -117,7 +116,22 @@
                 <div class="status-card">
                     <div>
                         <h4>EVIDENCE CHAIN</h4>
-                        <p>No unlinked claims detected.</p>
+                        <p>Secure exhibits to establish facts.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="evidence-panel">
+                <div class="evidence-header">
+                    <div>
+                        <h4>EVIDENCE VAULT (CHAIN OF CUSTODY)</h4>
+                        <p>Log all documents, receipts, and media related to this case.</p>
+                    </div>
+                    <button class="btn-navy-solid" id="btnVaultUpload">+ LOG EXHIBIT</button>
+                </div>
+                <div class="evidence-list" id="evidenceList">
+                    <div class="empty-state-cases" style="margin-top: 20px;">
+                        <p>No exhibits logged.<br>Secure your first piece of evidence to build leverage.</p>
                     </div>
                 </div>
             </div>
@@ -132,24 +146,12 @@
                 <div class="score-stats">
                     <div>
                         <span class="stat-label">Verified Exhibits</span>
-                        <span class="stat-val">0</span>
+                        <span class="stat-val" id="pressureExhibits">0</span>
                     </div>
                     <div>
                         <span class="stat-label">Procedural Violations</span>
                         <span class="stat-val">0</span>
                     </div>
-                </div>
-            </div>
-
-            <div class="requests-panel">
-                <h4>DISCOVERY & FOIA TARGETS</h4>
-                <div class="requests-grid">
-                    <label><input type="checkbox"> Original incident report</label>
-                    <label><input type="checkbox"> Database query records</label>
-                    <label><input type="checkbox"> CAD / dispatch logs</label>
-                    <label><input type="checkbox"> Metadata / audit logs</label>
-                    <label><input type="checkbox"> Bodycam footage & timestamps</label>
-                    <label><input type="checkbox"> Emails, texts, call logs</label>
                 </div>
             </div>
 
