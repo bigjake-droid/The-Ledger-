@@ -1,23 +1,17 @@
 // --- 1. STATE MANAGEMENT ---
+// Fully generalized for any user. Starts empty.
 let state = {
-    caseName: "JOHNSTOWN / LARIMER",
-    totalDamages: 105000, 
-    pressureScore: 45,
-    entries: [{
-        desc: "Initial Jeep Seizure & Lost Income", 
-        hit: 105000, 
-        category: "Direct Economic Loss",
-        target: "Law Enforcement / State",
-        tags: [], 
-        date: "8/20/2025"
-    }],
+    caseName: "UNASSIGNED CASE FILE",
+    totalDamages: 0, 
+    pressureScore: 0,
+    entries: [],
     evidence: []
 };
 
 // --- 2. INITIALIZATION & WIRING ---
 window.onload = () => {
     loadData();
-    injectModalStyles(); // Handled purely by CSS now, but kept for structure
+    injectModalStyles(); 
     wireButtons();
     updateUI();
 };
@@ -41,7 +35,7 @@ function wireButtons() {
 
     const newCaseBtn = document.getElementById('btnNewCaseSide');
     if(newCaseBtn) newCaseBtn.addEventListener('click', () => {
-        let name = prompt("Enter new Case Target (e.g., Victory Motors):");
+        let name = prompt("Enter new Case Target (e.g., Corporate Entity, Government Agency):");
         if(name) {
             state = { caseName: name, totalDamages: 0, pressureScore: 0, entries: [], evidence: [] };
             saveData();
@@ -149,7 +143,7 @@ function loadData() {
 
 function updateUI() {
     const titleEl = document.getElementById('activeCaseTitle');
-    if(titleEl) titleEl.innerText = state.caseName || "NO CASE SELECTED";
+    if(titleEl) titleEl.innerText = state.caseName || "UNASSIGNED CASE FILE";
 
     document.getElementById('dashTotal').innerText = `$${state.totalDamages.toLocaleString()}`;
     document.getElementById('dashPressure').innerText = state.pressureScore;
@@ -185,13 +179,13 @@ function openEntryModal() {
 
             <label class="t-label">TARGET DEFENDANT</label>
             <select id="mTarget" class="t-input">
-                <option value="Victory Motors">Victory Motors</option>
-                <option value="Law Enforcement / State">Law Enforcement / State</option>
-                <option value="Other / Third Party">Other / Third Party</option>
+                <option value="Primary Defendant">Primary Defendant</option>
+                <option value="Government / Municipal Entity">Government / Municipal Entity</option>
+                <option value="Corporate / Third Party">Corporate / Third Party</option>
             </select>
 
             <label class="t-label">INCIDENT DESCRIPTION</label>
-            <input type="text" id="mDesc" class="t-input" placeholder="e.g., Lost Wages, Illegal Seizure">
+            <input type="text" id="mDesc" class="t-input" placeholder="e.g., Lost Wages, Illegal Seizure, Policy Violation">
             
             <label class="t-label">BASE FINANCIAL HIT ($)</label>
             <input type="number" id="mAmt" class="t-input" placeholder="0.00">
@@ -244,79 +238,4 @@ function generateReport() {
         const canvas = document.createElement('canvas');
         canvas.width = logo.width;
         canvas.height = logo.height;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(logo, 0, 0);
-        const imgData = canvas.toDataURL('image/png');
-
-        doc.addImage(imgData, 'PNG', 90, 15, 30, 30);
-        buildPdfContent(doc, 55); 
-    };
-
-    logo.onerror = function() { buildPdfContent(doc, 20); };
-}
-
-function buildPdfContent(doc, startY) {
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(18);
-    doc.text("FORENSIC STATEMENT OF CIVIL DAMAGES", 105, startY, null, null, "center");
-    
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.text(`Generated: ${new Date().toLocaleString()}`, 105, startY + 8, null, null, "center");
-    doc.text(`Active Case File: ${state.caseName || "Unassigned"}`, 105, startY + 13, null, null, "center");
-
-    let boxY = startY + 25;
-    doc.setDrawColor(11, 25, 44); // Navy border
-    doc.setLineWidth(0.5);
-    doc.setFillColor(255, 255, 255);
-    doc.rect(20, boxY, 170, 30, "FD");
-
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text(`TOTAL ASSESSED LIABILITY: $${state.totalDamages.toLocaleString()}`, 25, boxY + 13);
-    doc.setFontSize(12);
-    doc.text(`Documented Legal Pressure Score: ${state.pressureScore}/100`, 25, boxY + 23);
-
-    let sectionY = boxY + 45;
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-    doc.text("ITEMIZED ECONOMIC IMPACT MATRIX", 20, sectionY);
-    doc.setLineWidth(1);
-    doc.line(20, sectionY + 3, 190, sectionY + 3);
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    let yPos = sectionY + 15;
-
-    if (state.entries.length === 0) {
-        doc.text("No entries recorded yet.", 20, yPos);
-    } else {
-        state.entries.forEach(entry => {
-            if (yPos > 270) { doc.addPage(); yPos = 20; }
-            
-            doc.setFont("helvetica", "bold");
-            doc.text(`${entry.date} | Target: ${entry.target || "N/A"}`, 20, yPos);
-            doc.text(`$${entry.hit.toLocaleString()}`, 190, yPos, null, null, "right");
-            
-            yPos += 6;
-            doc.setFont("helvetica", "normal");
-            doc.text(`[${entry.category || "Uncategorized"}] - ${entry.desc}`, 20, yPos);
-            
-            if (entry.tags && entry.tags.length > 0) {
-                yPos += 6;
-                doc.setFont("helvetica", "italic");
-                doc.setFontSize(9);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Applied Multipliers: ${entry.tags.join(' | ')}`, 25, yPos);
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
-            }
-            yPos += 12;
-            doc.setDrawColor(200, 200, 200);
-            doc.setLineWidth(0.1);
-            doc.line(20, yPos - 8, 190, yPos - 8);
-        });
-    }
-
-    doc.save("Forensic_Damages_Matrix.pdf");
-}
+        const ctx = canvas.getContext('2
