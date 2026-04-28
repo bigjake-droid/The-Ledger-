@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Ledger | Record. Prepare. Advance.</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#000000">
+    <meta name="theme-color" content="#ffffff">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cinzel:wght@600;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="style.css">
 </head>
@@ -17,8 +17,8 @@
 
     <div id="splashScreen" class="splash-screen">
         <img src="1000013825-Picsart-BackgroundRemover.png" alt="The Ledger Logo" class="splash-logo" onerror="this.style.display='none'">
-        <p class="splash-mission">TO FORGE SCATTERED EVIDENCE INTO UNDENIABLE LEVERAGE.<br>CONTROL THE RECORD. CONTROL THE OUTCOME.</p>
-        <button class="btn-gold-glow" id="btnEnterApp">INITIALIZE COMMAND CENTER</button>
+        <p class="splash-mission">DOCUMENT EVERYTHING. BE ORGANIZED. BE ASSERTIVE.<br>We can help with the rest.</p>
+        <button class="btn-navy-solid" id="btnEnterApp">INITIALIZE COMMAND CENTER</button>
     </div>
 
     <div class="app-container">
@@ -27,27 +27,25 @@
             <div class="brand-area">
                 <div class="brand-text">
                     <h1>THE<br><span class="highlight">LEDGER</span></h1>
-                    <p>RECORD. PREPARE. ADVANCE.</p>
+                    <p>CIVIL LITIGATION TOOLS</p>
                 </div>
             </div>
 
-            <button class="btn-red-outline full-width" id="btnNewCaseSide">+ NEW CASE</button>
+            <button class="btn-navy-solid full-width" id="btnNewCaseSide">+ NEW CASE</button>
 
             <div class="search-container">
-                <input type="text" placeholder="🔍 Search cases...">
+                <input type="text" placeholder="Search records...">
             </div>
 
             <div class="sidebar-section">
                 <h4 class="section-divider"><span>YOUR CASES</span></h4>
                 <div class="empty-state-cases">
-                    <div class="folder-icon">📁</div>
-                    <p>No cases yet.<br>Build your first case<br>and take control of<br>the record.</p>
+                    <p>No active case files.<br>Initialize a new record.</p>
                 </div>
             </div>
 
             <div class="sidebar-footer">
-                <div class="shield-mini">🛡️</div>
-                <p>Facts don't argue.<br>Records don't forget.<br><em>Truth wins.</em></p>
+                <p><strong>DOCUMENT EVERYTHING.</strong><br>BE ORGANIZED.<br>BE ASSERTIVE.</p>
             </div>
         </aside>
 
@@ -55,124 +53,95 @@
             
             <header class="top-header">
                 <div class="header-titles">
-                    <p class="eyebrow">🛡️ ACTIVE CIVIL FILE</p>
+                    <p class="eyebrow">ACTIVE CIVIL FILE</p>
                     <h2 id="activeCaseTitle">JOHNSTOWN / LARIMER</h2>
-                    <p class="subtitle">Select a case or create a new one to begin building your record.</p>
                 </div>
                 <div class="header-actions">
-                    <button class="btn-red" id="btnDelete">🗑️ DELETE CASE</button>
-                    <button class="btn-gold-outline" onclick="generateReport()">📥 EXPORT PDF</button>
-                    <button class="btn-gold-outline" onclick="exportData()">💾 BACKUP DATA</button>
-                    <button class="btn-gold-outline" id="btnImport">📤 IMPORT DATA</button>
+                    <button class="btn-navy-outline" id="btnDelete">DELETE CASE</button>
+                    <button class="btn-navy-outline" onclick="generateReport()">EXPORT LEDGER PDF</button>
+                    <button class="btn-navy-outline" onclick="exportData()">BACKUP DATA</button>
+                    <button class="btn-navy-outline" id="btnImport">IMPORT DATA</button>
                     <input type="file" id="importFile" accept=".json" style="display:none">
                 </div>
             </header>
 
             <div class="stats-row">
                 <div class="stat-box">
-                    <span class="icon">📅</span>
                     <div class="stat-data">
-                        <span class="label">TIMELINE</span>
+                        <span class="label">TIMELINE EVENTS</span>
                         <span class="number">0</span>
-                        <span class="sub">EVENTS</span>
                     </div>
                 </div>
                 <div class="stat-box">
-                    <span class="icon">⚡</span>
                     <div class="stat-data">
-                        <span class="label">EVIDENCE</span>
+                        <span class="label">EVIDENCE LOGGED</span>
                         <span class="number" id="evidenceCount">0</span>
-                        <span class="sub">ITEMS</span>
                     </div>
                 </div>
-                <div class="stat-box">
-                    <span class="icon">⚖️</span>
+                <div class="stat-box stat-highlight">
                     <div class="stat-data">
-                        <span class="label">DAMAGES</span>
+                        <span class="label">TOTAL CALCULATED DAMAGES</span>
                         <span class="number" id="dashTotal">$0</span>
-                        <span class="sub">TOTAL</span>
-                    </div>
-                </div>
-                <div class="stat-box">
-                    <span class="icon">📄</span>
-                    <div class="stat-data">
-                        <span class="label">DOCUMENTS</span>
-                        <span class="number">0</span>
-                        <span class="sub">ITEMS</span>
                     </div>
                 </div>
             </div>
 
             <div class="hero-box">
                 <div class="hero-text">
-                    <p class="eyebrow-hero">BUILD YOUR CASE.</p>
                     <h3>CONTROL THE OUTCOME.</h3>
-                    <p>Document everything. Prove everything. Win.</p>
+                    <p>Document every economic hit, civil violation, and leverage point.</p>
                 </div>
-                <button class="btn-gold-glow" id="btnAddHero">+ ADD TIMELINE EVENT</button>
+                <button class="btn-navy-solid" id="btnAddHero">+ LOG CIVIL DAMAGES</button>
             </div>
 
             <div class="status-grid">
                 <div class="status-card">
-                    <div class="icon-circle red">🛡️</div>
                     <div>
-                        <h4>EVIDENCE ADDED</h4>
-                        <p>No evidence added yet.</p>
+                        <h4>COMPENSATORY DAMAGES</h4>
+                        <p>Direct economic losses recorded.</p>
                     </div>
-                    <span class="arrow">→</span>
                 </div>
                 <div class="status-card">
-                    <div class="icon-circle red">⚔️</div>
                     <div>
-                        <h4>CONFLICTS</h4>
-                        <p>No conflicts detected yet.</p>
+                        <h4>CONSEQUENTIAL DAMAGES</h4>
+                        <p>Out-of-pocket tracking active.</p>
                     </div>
-                    <span class="arrow">→</span>
                 </div>
                 <div class="status-card">
-                    <div class="icon-circle red">👁️</div>
                     <div>
-                        <h4>INVESTIGATOR VIEW</h4>
-                        <p>No contradictions yet.</p>
+                        <h4>PUNITIVE EXPOSURE</h4>
+                        <p>Corporate indifference tracking.</p>
                     </div>
-                    <span class="arrow">→</span>
                 </div>
                 <div class="status-card">
-                    <div class="icon-circle red">🎯</div>
                     <div>
-                        <h4>LEVERAGE POINTS</h4>
-                        <p>No leverage points yet.</p>
+                        <h4>EVIDENCE CHAIN</h4>
+                        <p>No unlinked claims detected.</p>
                     </div>
-                    <span class="arrow">→</span>
                 </div>
             </div>
 
             <div class="pressure-panel">
                 <div class="score-left">
-                    <div class="shield-large">✊</div>
                     <div>
                         <span class="score-title">LEGAL PRESSURE SCORE</span>
                         <div class="score-number"><span id="dashPressure">0</span><span class="out-of">/100</span></div>
-                        <span class="score-sub">Pressure Score</span>
                     </div>
                 </div>
                 <div class="score-stats">
                     <div>
-                        <span class="stat-label">Evidence Items</span>
+                        <span class="stat-label">Verified Exhibits</span>
                         <span class="stat-val">0</span>
                     </div>
                     <div>
-                        <span class="stat-label">Conflicts Detected</span>
+                        <span class="stat-label">Procedural Violations</span>
                         <span class="stat-val">0</span>
                     </div>
-                </div>
-                <div class="gauge-circle">
-                    <span>0%</span>
                 </div>
             </div>
 
             <div class="requests-panel">
-                <h4>RECOMMENDED REQUESTS</h4>
+                <h4>DISCOVERY & FOIA TARGETS</h4>
                 <div class="requests-grid">
                     <label><input type="checkbox"> Original incident report</label>
                     <label><input type="checkbox"> Database query records</label>
@@ -180,7 +149,6 @@
                     <label><input type="checkbox"> Metadata / audit logs</label>
                     <label><input type="checkbox"> Bodycam footage & timestamps</label>
                     <label><input type="checkbox"> Emails, texts, call logs</label>
-                    <label><input type="checkbox"> Affidavit or charging document</label>
                 </div>
             </div>
 
