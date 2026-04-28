@@ -1,11 +1,10 @@
 // --- 1. STATE MANAGEMENT ---
-// Boots entirely blank for a new user/client
 let state = {
     caseName: "",
     totalDamages: 0, 
     pressureScore: 0,
     entries: [],
-    evidence: []
+    evidence: [] // Evidence Vault Array
 };
 
 // --- 2. INITIALIZATION & WIRING ---
@@ -16,13 +15,12 @@ window.onload = () => {
 };
 
 function wireButtons() {
-    const enterBtn = document.getElementById('btnEnterApp');
-    if(enterBtn) enterBtn.addEventListener('click', () => {
-        document.getElementById('splashScreen').classList.add('hidden');
-    });
-
     const addBtn = document.getElementById('btnAddHero');
     if(addBtn) addBtn.addEventListener('click', openEntryModal);
+
+    // Evidence Vault Button
+    const vaultBtn = document.getElementById('btnVaultUpload');
+    if(vaultBtn) vaultBtn.addEventListener('click', openVaultModal);
 
     const delBtn = document.getElementById('btnDelete');
     if(delBtn) delBtn.addEventListener('click', () => {
@@ -69,21 +67,6 @@ function wireButtons() {
             e.target.value = ''; 
         };
     }
-
-    const checkboxes = document.querySelectorAll('.requests-panel input[type="checkbox"]');
-    checkboxes.forEach(box => {
-        box.addEventListener('change', (e) => {
-            if(e.target.checked) {
-                state.pressureScore += 5;
-            } else {
-                state.pressureScore -= 5;
-            }
-            if(state.pressureScore > 100) state.pressureScore = 100;
-            if(state.pressureScore < 0) state.pressureScore = 0;
-            saveData();
-            updateUI();
-        });
-    });
 }
 
 // --- 3. CORE LOGIC ---
@@ -110,7 +93,26 @@ function logImpact(desc, baseAmt, category, target, parental, indifference) {
     updateUI();
 }
 
-// Export JSON Backup 
+function logEvidence(filename, desc) {
+    // Generate Exhibit Letter (A, B, C...) based on array length
+    const exhibitLetter = String.fromCharCode(65 + state.evidence.length); 
+    const exhibitLabel = `Exhibit ${exhibitLetter}`;
+
+    state.evidence.push({
+        id: exhibitLabel,
+        filename: filename,
+        desc: desc,
+        date: new Date().toLocaleDateString()
+    });
+
+    // Add pressure score automatically when evidence is logged
+    state.pressureScore += 2;
+    if(state.pressureScore > 100) state.pressureScore = 100;
+
+    saveData();
+    updateUI();
+}
+
 function exportData() {
     const dataStr = JSON.stringify(state, null, 2);
     const blob = new Blob([dataStr], { type: "application/json" });
@@ -137,6 +139,7 @@ function loadData() {
     const saved = localStorage.getItem('stealthLedgerState');
     if(saved) {
         state = JSON.parse(saved);
+        if(!state.evidence) state.evidence = []; // Catch for old saves
     }
 }
 
@@ -146,13 +149,36 @@ function updateUI() {
 
     document.getElementById('dashTotal').innerText = `$${state.totalDamages.toLocaleString()}`;
     document.getElementById('dashPressure').innerText = state.pressureScore;
-    document.getElementById('evidenceCount').innerText = state.evidence ? state.evidence.length : 0;
     
-    const eventCount = document.querySelector('.stat-box:nth-child(1) .number');
+    document.getElementById('evidenceCount').innerText = state.evidence.length;
+    const presEx = document.getElementById('pressureExhibits');
+    if(presEx) presEx.innerText = state.evidence.length;
+    
+    const eventCount = document.getElementById('eventCount');
     if(eventCount) eventCount.innerText = state.entries.length;
+
+    // Render Evidence Vault
+    const listEl = document.getElementById('evidenceList');
+    if(listEl) {
+        if(state.evidence.length === 0) {
+            listEl.innerHTML = `<div class="empty-state-cases" style="margin-top: 20px;"><p>No exhibits logged.<br>Secure your first piece of evidence to build leverage.</p></div>`;
+        } else {
+            listEl.innerHTML = state.evidence.map(ex => `
+                <div class="exhibit-item">
+                    <div class="exhibit-info">
+                        <h5>${ex.id} - ${ex.desc}</h5>
+                        <p>File Link: ${ex.filename}</p>
+                    </div>
+                    <div class="exhibit-meta">
+                        Date Secured<br>${ex.date}
+                    </div>
+                </div>
+            `).join('');
+        }
+    }
 }
 
-// --- 5. TACTICAL MODAL SYSTEM (GRANULAR CIVIL SUIT MATRIX) ---
+// --- 5. TACTICAL MODAL SYSTEMS ---
 function openEntryModal() {
     const existing = document.getElementById('entryModal');
     if(existing) existing.remove();
@@ -161,33 +187,21 @@ function openEntryModal() {
     overlay.id = 'entryModal';
     overlay.className = 'tactical-modal-overlay';
     
-    // Updated default targets to be generic
     overlay.innerHTML = `
         <div class="tactical-modal">
             <h3>LOG CIVIL DAMAGES</h3>
-            
             <label class="t-label">NATURE OF DAMAGES</label>
             <select id="mCategory" class="t-input">
                 <option value="Direct Economic Loss">Direct Economic Loss (Base)</option>
                 <option value="Consequential Damages">Consequential Damages (Out of Pocket)</option>
                 <option value="Punitive / Statutory">Punitive / Statutory Violations</option>
             </select>
-
             <label class="t-label">TARGET DEFENDANT</label>
             <input type="text" id="mTarget" class="t-input" placeholder="Name of Defendant or Agency">
-
             <label class="t-label">INCIDENT DESCRIPTION</label>
-            <input type="text" id="mDesc" class="t-input" placeholder="e.g., Lost Wages, Illegal Seizure, Tow Fee">
-            
+            <input type="text" id="mDesc" class="t-input" placeholder="e.g., Lost Wages, Tow Fee">
             <label class="t-label">BASE FINANCIAL HIT ($)</label>
             <input type="number" id="mAmt" class="t-input" placeholder="0.00">
-            
-            <label class="t-check-row">
-                <input type="checkbox" id="mParental"> Apply 2.5x Parental / Caregiver Tax
-            </label>
-            <label class="t-check-row">
-                <input type="checkbox" id="mIndiff"> Apply 10x Corporate Indifference Multiplier
-            </label>
             
             <div class="t-actions">
                 <button class="btn-navy-outline full-width" onclick="document.getElementById('entryModal').remove()">CANCEL</button>
@@ -202,17 +216,61 @@ function openEntryModal() {
         const amt = parseFloat(document.getElementById('mAmt').value);
         const category = document.getElementById('mCategory').value;
         const target = document.getElementById('mTarget').value || "Unspecified Target";
-        const pTax = document.getElementById('mParental').checked;
-        const iTax = document.getElementById('mIndiff').checked;
 
-        if(!desc || !amt) { alert("Description and Amount required to build the record."); return; }
+        if(!desc || !amt) { alert("Description and Amount required."); return; }
 
-        logImpact(desc, amt, category, target, pTax, iTax);
+        logImpact(desc, amt, category, target, false, false);
         document.getElementById('entryModal').remove();
     });
 }
 
-// --- 6. PDF EXPORT ENGINE (FORENSIC AUDIT FORMAT) ---
+function openVaultModal() {
+    const existing = document.getElementById('vaultModal');
+    if(existing) existing.remove();
+
+    const overlay = document.createElement('div');
+    overlay.id = 'vaultModal';
+    overlay.className = 'tactical-modal-overlay';
+    
+    overlay.innerHTML = `
+        <div class="tactical-modal">
+            <h3>LOG NEW EXHIBIT</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">
+                *For security and browser limits, keep physical files in a local folder. 
+                This Vault establishes your Chain of Custody index for court records.
+            </p>
+            
+            <label class="t-label">SELECT LOCAL FILE</label>
+            <input type="file" id="vFile" class="t-input" style="padding-top: 10px;">
+
+            <label class="t-label">EXHIBIT DESCRIPTION</label>
+            <input type="text" id="vDesc" class="t-input" placeholder="e.g., Motion to Dismiss, Tow Receipt">
+            
+            <div class="t-actions">
+                <button class="btn-navy-outline full-width" onclick="document.getElementById('vaultModal').remove()">CANCEL</button>
+                <button class="btn-navy-solid full-width" id="vSave">SECURE EXHIBIT</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    document.getElementById('vSave').addEventListener('click', () => {
+        const fileInput = document.getElementById('vFile');
+        const desc = document.getElementById('vDesc').value;
+        
+        let filename = "No file selected";
+        if(fileInput.files.length > 0) {
+            filename = fileInput.files[0].name;
+        }
+
+        if(!desc) { alert("An Exhibit Description is required to establish Chain of Custody."); return; }
+
+        logEvidence(filename, desc);
+        document.getElementById('vaultModal').remove();
+    });
+}
+
+// --- 6. PDF EXPORT ENGINE (UPDATED TO INCLUDE EVIDENCE LOG) ---
 function generateReport() {
     if (!window.jspdf) {
         alert("PDF Engine loading... please wait.");
@@ -263,6 +321,7 @@ function buildPdfContent(doc, startY) {
     doc.setFontSize(12);
     doc.text(`Documented Legal Pressure Score: ${state.pressureScore}/100`, 25, boxY + 23);
 
+    // --- DAMAGES MATRIX ---
     let sectionY = boxY + 45;
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
@@ -276,31 +335,49 @@ function buildPdfContent(doc, startY) {
 
     if (state.entries.length === 0) {
         doc.text("No entries recorded yet.", 20, yPos);
+        yPos += 10;
     } else {
         state.entries.forEach(entry => {
-            if (yPos > 270) { doc.addPage(); yPos = 20; }
-            
+            if (yPos > 250) { doc.addPage(); yPos = 20; }
             doc.setFont("helvetica", "bold");
             doc.text(`${entry.date} | Target: ${entry.target || "N/A"}`, 20, yPos);
             doc.text(`$${entry.hit.toLocaleString()}`, 190, yPos, null, null, "right");
-            
             yPos += 6;
             doc.setFont("helvetica", "normal");
             doc.text(`[${entry.category || "Uncategorized"}] - ${entry.desc}`, 20, yPos);
-            
-            if (entry.tags && entry.tags.length > 0) {
-                yPos += 6;
-                doc.setFont("helvetica", "italic");
-                doc.setFontSize(9);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`Applied Multipliers: ${entry.tags.join(' | ')}`, 25, yPos);
-                doc.setTextColor(0, 0, 0);
-                doc.setFontSize(10);
-            }
             yPos += 12;
             doc.setDrawColor(200, 200, 200);
             doc.setLineWidth(0.1);
             doc.line(20, yPos - 8, 190, yPos - 8);
+        });
+    }
+
+    // --- EVIDENCE INDEX ---
+    yPos += 10;
+    if (yPos > 230) { doc.addPage(); yPos = 20; }
+    
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+    doc.text("OFFICIAL EXHIBIT INDEX (CHAIN OF CUSTODY)", 20, yPos);
+    doc.setLineWidth(1);
+    doc.setDrawColor(11, 25, 44);
+    doc.line(20, yPos + 3, 190, yPos + 3);
+
+    yPos += 15;
+    doc.setFontSize(10);
+    
+    if (state.evidence.length === 0) {
+        doc.setFont("helvetica", "normal");
+        doc.text("No exhibits secured on record.", 20, yPos);
+    } else {
+        state.evidence.forEach(ex => {
+            if (yPos > 270) { doc.addPage(); yPos = 20; }
+            doc.setFont("helvetica", "bold");
+            doc.text(`${ex.id}: ${ex.desc}`, 20, yPos);
+            yPos += 5;
+            doc.setFont("helvetica", "normal");
+            doc.text(`File Reference: ${ex.filename} | Secured: ${ex.date}`, 25, yPos);
+            yPos += 10;
         });
     }
 
